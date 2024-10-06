@@ -9,8 +9,8 @@
     "migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "@auth/core": "^0.35.3",
-    "@auth/solid-start": "^0.13.3",
+    "@auth/core": "^0.36.0",
+    "@auth/solid-start": "^0.14.0",
     "@libsql/client": "^0.14.0",
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.7",
@@ -18,11 +18,11 @@
     "@trpc/client": "^11.0.0-rc.553",
     "@trpc/server": "^11.0.0-rc.553",
     "@tsconfig/bun": "^1.0.7",
-    "@typeschema/valibot": "^0.13.5",
+    "@typeschema/valibot": "^0.14.0",
     "drizzle-orm": "^0.33.0",
     "solid-js": "^1.9.1",
     "superjson": "^2.2.1",
-    "valibot": "^0.29.0",
+    "valibot": "^0.42.1",
     "vinxi": "^0.4.3"
   },
   "engines": {
