@@ -1,8 +1,8 @@
 import { Title } from "@solidjs/meta";
 import { createAsync } from "@solidjs/router";
-import { createSignal } from "solid-js";
 import Counter from "~/components/Counter";
 import { api } from "~/lib/api";
+import { useSession } from "~/lib/session";
 
 export default function Home() {
   const hello = createAsync(
@@ -17,7 +17,7 @@ export default function Home() {
     },
     { initialValue: "Loading..." },
   );
-  const [test, setTest] = createSignal(false);
+  const session = useSession();
   return (
     <main>
       <Title>Hello World</Title>
@@ -25,10 +25,8 @@ export default function Home() {
       <pre>
         <code>{hello()}</code>
       </pre>
+      <p>Session: {session?.user?.name || "None"}</p>
       <p>Hot reload works!</p>
-      <button type="button" onClick={() => setTest(!test())}>
-        {test() ? "Hide" : "Show"}
-      </button>
     </main>
   );
 }
