@@ -22,7 +22,7 @@ const getBaseUrl = () => {
 export const api = createTRPCClient<AppRouter>({
   links: [
     // will print out helpful logs when using client
-    loggerLink(),
+    loggerLink({ enabled: (op) => op.direction !== "down" }),
     // identifies what url will handle trpc requests
     unstable_httpBatchStreamLink({
       transformer: SuperJSON,

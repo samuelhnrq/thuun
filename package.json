@@ -11,6 +11,7 @@
   "dependencies": {
     "@auth/core": "^0.36.0",
     "@auth/solid-start": "^0.14.0",
+    "@kobalte/core": "^0.13.6",
     "@libsql/client": "^0.14.0",
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.7",
@@ -19,9 +20,13 @@
     "@trpc/server": "^11.0.0-rc.553",
     "@tsconfig/bun": "^1.0.7",
     "@typeschema/valibot": "^0.14.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.33.0",
     "solid-js": "^1.9.1",
     "superjson": "^2.2.1",
+    "tailwind-merge": "^2.5.3",
+    "unocss-preset-animations": "^1.1.0",
     "valibot": "^0.42.1",
     "vinxi": "^0.4.3"
   },
@@ -32,6 +37,7 @@
     "@biomejs/biome": "1.9.3",
     "drizzle-kit": "^0.24.2",
     "typescript": "^5.6.2",
+    "unocss": "^0.63.3",
     "vitest": "^2.1.2",
     "wrangler": "^3.80.0"
   }

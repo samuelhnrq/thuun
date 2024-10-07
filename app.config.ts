@@ -1,3 +1,4 @@
+import UnoCSS from "unocss/vite";
 import { defineConfig } from "@solidjs/start/config";
 
 export default defineConfig({
@@ -6,5 +7,8 @@ export default defineConfig({
     rollupConfig: {
       external: ["node:async_hooks", "@gcornut/valibot-json-schema"],
     },
+  },
+  vite: {
+    plugins: [UnoCSS()],
   },
 });

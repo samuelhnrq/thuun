@@ -1,4 +1,4 @@
-import { createContext, useContext } from "solid-js";
+import { createContext, createEffect, useContext } from "solid-js";
 import { getRequestEvent } from "solid-js/web";
 import { createResource } from "solid-js";
 import { getSession } from "../server/auth";
@@ -7,15 +7,12 @@ import type { ParentProps } from "solid-js";
 
 const fetchSession = async () => {
   "use server";
-  console.log("fetching slow session");
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  const event = getRequestEvent();
-  if (!event?.request) {
-    return null;
-  }
   try {
+    const event = getRequestEvent();
+    if (!event?.request) {
+      return null;
+    }
     const session = await getSession(event.request);
-    console.log("session", session);
     return session;
   } catch {
     return null;
@@ -29,12 +26,23 @@ export function useSession() {
 }
 
 export function SessionProvider(props: ParentProps) {
-  const [data] = createResource(() => fetchSession(), {
+  const [data, { refetch }] = createResource(() => fetchSession(), {
     name: "user-session",
     initialValue: null,
-    ssrLoadFrom: "initial",
+    ssrLoadFrom: "server",
   });
-  console.log("data", data());
+
+  createEffect((oldId?: ReturnType<typeof setTimeout>) => {
+    if (oldId) {
+      clearTimeout(oldId);
+    }
+    const expires = data()?.expires;
+    if (expires) {
+      const time = new Date(expires).getTime();
+      const newId = setTimeout(() => refetch(), Date.now() - time - 1000);
+      return newId;
+    }
+  });
 
   return (
     <SessionContext.Provider value={data()}>

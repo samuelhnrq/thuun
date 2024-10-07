@@ -1,9 +1,23 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { Suspense } from "solid-js";
+import { Suspense, type ParentProps } from "solid-js";
 import "./app.css";
-import { SessionProvider } from "./lib/session";
+import "uno.css";
+import { SessionProvider } from "~/lib/session";
+import { Navbar } from "~/components/Navbar";
+
+function MainContent({ children }: ParentProps) {
+  return (
+    <Suspense fallback={"Loading..."}>
+      <SessionProvider>
+        <main class="h-screen flex flex-col justify-center items-center">
+          {children}
+        </main>
+      </SessionProvider>
+    </Suspense>
+  );
+}
 
 export default function App() {
   return (
@@ -12,11 +26,8 @@ export default function App() {
       root={(props) => (
         <MetaProvider>
           <Title>SolidStart - Basic</Title>
-          <a href="/">Index</a>
-          <a href="/about">About</a>
-          <Suspense fallback={"Loading..."}>
-            <SessionProvider>{props.children}</SessionProvider>
-          </Suspense>
+          <Navbar />
+          <MainContent>{props.children}</MainContent>
         </MetaProvider>
       )}
     >
