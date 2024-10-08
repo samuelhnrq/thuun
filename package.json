@@ -18,15 +18,12 @@
     "@solidjs/start": "^1.0.8",
     "@trpc/client": "^11.0.0-rc.566",
     "@trpc/server": "^11.0.0-rc.566",
-    "@tsconfig/bun": "^1.0.7",
     "@typeschema/valibot": "^0.14.0",
-    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.34.0",
+    "drizzle-orm": "^0.34.1",
     "solid-js": "^1.9.2",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.5.3",
-    "unocss-preset-animations": "^1.1.0",
     "valibot": "^0.42.1",
     "vinxi": "^0.4.3"
   },
@@ -35,9 +32,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
+    "@flydotio/dockerfile": "^0.5.9",
+    "@tsconfig/bun": "^1.0.7",
+    "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.25.0",
-    "typescript": "^5.6.2",
-    "unocss": "^0.63.4",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.3",
     "vitest": "^2.1.2"
   }
 }

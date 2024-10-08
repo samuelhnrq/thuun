@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <>
       <Title>Hello World</Title>
-      <Counter />
       <p>Session: {session?.user?.name || "None"}</p>
+      <Counter />
       <p>Hot reload works!</p>
     </>
   );
