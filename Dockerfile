@@ -22,7 +22,7 @@ FROM base AS build
 
 # Install node modules
 COPY bun.lockb package.json ./
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Copy application code
 COPY . .
@@ -32,7 +32,7 @@ RUN bun run --bun build
 
 # Remove development dependencies
 RUN rm -rf node_modules && \
-    bun install --ci
+    bun install --ci --frozen-lockfile
 
 
 # Final stage for app image
