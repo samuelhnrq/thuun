@@ -1,14 +1,10 @@
 import { cn } from "~/lib/cn";
-import {
-  Button as BaseButton,
-  type ButtonRootProps,
-} from "@kobalte/core/button";
-import type { ParentProps } from "solid-js";
+import { Button as BaseButton } from "@kobalte/core/button";
+import type { JSX, ParentProps } from "solid-js";
 
-function Button({
-  children,
-  ...rest
-}: ParentProps<ButtonRootProps<HTMLButtonElement>>) {
+type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+
+function Button({ children, ...rest }: ParentProps<Props>) {
   return (
     <BaseButton
       class={cn("bg-primary text-primary-foreground px-4 py-2")}

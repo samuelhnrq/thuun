@@ -29,6 +29,7 @@
     "enabled": true
   },
   "files": {
-    "include": ["src/**/*.tsx", "src/**/*.ts", "./*.ts"]
+    "include": ["src/**/*.tsx", "src/**/*.ts", "./*.ts"],
+    "ignore": ["node_modules/**/*"]
   }
 }

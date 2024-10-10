@@ -2,7 +2,7 @@
 
 # Adjust BUN_VERSION as desired
 ARG BUN_VERSION=1.1.29
-FROM oven/bun:${BUN_VERSION} as base
+FROM oven/bun:${BUN_VERSION} AS base
 
 LABEL fly_launch_runtime="Bun"
 
@@ -14,7 +14,7 @@ ENV NODE_ENV="production"
 
 
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 # Install packages needed to build node modules
 # RUN apt-get update -qq && \
@@ -28,7 +28,7 @@ RUN bun install
 COPY . .
 
 # Build application
-RUN bun run build
+RUN bun run --bun build
 
 # Remove development dependencies
 RUN rm -rf node_modules && \
@@ -36,11 +36,11 @@ RUN rm -rf node_modules && \
 
 
 # Final stage for app image
-FROM base
+FROM base AS runtime
 
 # Copy built application
 COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "bun", "run", "start" ]
+CMD [ "sh", "-c", "bun run .output/server/index.mjs" ]
