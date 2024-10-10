@@ -28,7 +28,8 @@ RUN bun install --frozen-lockfile
 COPY . .
 
 # Build application
-RUN bun run --bun build
+RUN bun run biome ci && \
+    bun run --bun build
 
 # Remove development dependencies
 RUN rm -rf node_modules && \

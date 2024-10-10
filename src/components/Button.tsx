@@ -1,6 +1,6 @@
-import { cn } from "~/lib/cn";
 import { Button as BaseButton } from "@kobalte/core/button";
 import type { JSX, ParentProps } from "solid-js";
+import { cn } from "~/lib/cn";
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 

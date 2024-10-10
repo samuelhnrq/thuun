@@ -1,9 +1,9 @@
-import { createContext, createEffect, useContext } from "solid-js";
-import { getRequestEvent } from "solid-js/web";
-import { createResource } from "solid-js";
-import { getSession } from "../server/auth";
 import type { Session } from "@auth/solid-start";
+import { createContext, createEffect, useContext } from "solid-js";
+import { createResource } from "solid-js";
 import type { ParentProps } from "solid-js";
+import { getRequestEvent } from "solid-js/web";
+import { getSession } from "../server/auth";
 
 const fetchSession = async () => {
   "use server";
