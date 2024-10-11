@@ -29,7 +29,14 @@
     "enabled": true
   },
   "files": {
-    "include": ["src/**/*.tsx", "src/**/*.ts", "./*.ts", "./*.js"],
+    "include": [
+      "src/**/*.tsx",
+      "src/**/*.ts",
+      "src/**/*.css",
+      "tailwind.config.ts",
+      "drizzle.config.ts",
+      "app.config.ts"
+    ],
     "ignore": ["node_modules", ".output", ".vinxi"]
   }
 }

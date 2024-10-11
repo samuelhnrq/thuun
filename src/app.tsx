@@ -14,11 +14,10 @@ export default function App() {
       root={(props) => (
         <MetaProvider>
           <Title>SolidStart - Basic</Title>
-          <Navbar />
-
           <Suspense fallback={"Loading..."}>
             <SessionProvider>
-              <main>{props.children}</main>
+              <Navbar />
+              {props.children}
             </SessionProvider>
           </Suspense>
         </MetaProvider>

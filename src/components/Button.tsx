@@ -7,7 +7,10 @@ type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 function Button({ children, ...rest }: ParentProps<Props>) {
   return (
     <BaseButton
-      class={cn("bg-primary text-primary-foreground px-4 py-2")}
+      class={cn(
+        "bg-primary text-slate-200 px-4 py-2 rounded-md",
+        "hover:brightness-110 focus:outline-none focus:ring-2",
+      )}
       {...rest}
     >
       {children}

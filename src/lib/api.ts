@@ -28,10 +28,9 @@ export const api = createTRPCClient<AppRouter>({
       transformer: SuperJSON,
       url: `${getBaseUrl()}/api/trpc`,
       fetch(url, options = {}) {
-        let originalCookies = "";
         if (typeof window === "undefined") {
           const event = getRequestEvent();
-          originalCookies = event?.request.headers.get("cookie") ?? "";
+          const originalCookies = event?.request.headers.get("cookie") ?? "";
           if (originalCookies) {
             const headers = new Headers(options.headers);
             // we're in the server, so we need to forward the cookies
