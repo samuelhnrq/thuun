@@ -29,12 +29,12 @@ COPY . .
 
 # Build application
 RUN bun run biome ci && \
+    export "AUTH_SECRET=$(openssl rand -base64 32)" && \
     bun run --bun build
 
 # Remove development dependencies
 RUN rm -rf node_modules && \
     bun install --ci --frozen-lockfile
-
 
 # Final stage for app image
 FROM base AS runtime
