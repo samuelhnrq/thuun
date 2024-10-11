@@ -10,8 +10,8 @@ CREATE TABLE `entity` (
 	`kind` integer NOT NULL,
 	`name` text NOT NULL,
 	`external_id` text NOT NULL,
-	`created_at` integer DEFAULT UNIXEPOCH() NOT NULL,
-	`updated_at` integer DEFAULT UNIXEPOCH() NOT NULL,
+	`created_at` integer DEFAULT (UNIXEPOCH()) NOT NULL,
+	`updated_at` integer DEFAULT (UNIXEPOCH()) NOT NULL,
 	FOREIGN KEY (`kind`) REFERENCES `entity_kind`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -20,6 +20,7 @@ CREATE TABLE `entity_kind` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `entity_kind_name_unique` ON `entity_kind` (`name`);--> statement-breakpoint
 CREATE TABLE `entity_prop` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -40,8 +41,6 @@ CREATE TABLE `user_guess` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` text NOT NULL,
 	`day` integer NOT NULL,
-	`created_at` integer DEFAULT UNIXEPOCH() NOT NULL,
+	`created_at` integer DEFAULT (UNIXEPOCH()) NOT NULL,
 	FOREIGN KEY (`day`) REFERENCES `daily_etity`(`id`) ON UPDATE no action ON DELETE cascade
 );
---> statement-breakpoint
-CREATE UNIQUE INDEX `entity_kind_name_unique` ON `entity_kind` (`name`);

@@ -5,14 +5,16 @@ if (!process.env.TURSO_DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "./src/db/schema.ts",
+  schema: "./drizzle/schema.ts",
+  out: "./drizzle/migrations",
+  casing: "snake_case",
   dialect: "turso",
   dbCredentials: {
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
   },
   migrations: {
-    prefix: "timestamp",
+    prefix: "unix",
   },
   strict: true,
 });

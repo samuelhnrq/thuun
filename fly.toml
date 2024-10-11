@@ -6,6 +6,9 @@
 app = 'thuun'
 primary_region = 'cdg'
 
+[deploy]
+release_command = "bun run drizzle-kit migrate"
+
 [build]
 
 [http_service]

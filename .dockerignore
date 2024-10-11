@@ -7,6 +7,8 @@ dist
 .vinxi
 app.config.timestamp_*.js
 
+Dockerfile
+
 *.db*
 
 # Environment

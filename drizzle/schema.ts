@@ -30,10 +30,10 @@ export const entity = sqliteTable("entity", {
   externalId: text("external_id").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
-    .default(sql`UNIXEPOCH()`),
+    .default(sql`(UNIXEPOCH())`),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
-    .default(sql`UNIXEPOCH()`),
+    .default(sql`(UNIXEPOCH())`),
 });
 
 export const entityPropValue = sqliteTable("entity_prop_value", {
@@ -63,5 +63,5 @@ export const userGuess = sqliteTable("user_guess", {
     .references(() => dailyEntity.id, { onDelete: "cascade" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
-    .default(sql`UNIXEPOCH()`),
+    .default(sql`(UNIXEPOCH())`),
 });

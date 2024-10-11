@@ -29,12 +29,8 @@ COPY . .
 
 # Build application
 RUN bun run biome ci && \
-    export "AUTH_SECRET=$(openssl rand -base64 32)" && \
+    export AUTH_SECRET="$(bun -e 'console.log(await Bun.password.hash(Date.now()))')" && \
     bun run --bun build
-
-# Remove development dependencies
-RUN rm -rf node_modules && \
-    bun install --ci --frozen-lockfile
 
 # Final stage for app image
 FROM base AS runtime
@@ -44,4 +40,5 @@ COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+
 CMD [ "sh", "-c", "bun run .output/server/index.mjs" ]
