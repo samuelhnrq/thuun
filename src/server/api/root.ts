@@ -1,8 +1,12 @@
-import { exampleRouter } from "./routers/example";
+import { guessArtist } from "./procedures/guessArtist";
+import { listGuesses } from "./procedures/listGuesses";
+import searchArtist from "./procedures/searchArtist";
 import { createTRPCRouter } from "./utils";
 
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
+  guessArtist,
+  listGuesses,
+  searchArtist,
 });
 
 export type AppRouter = typeof appRouter;

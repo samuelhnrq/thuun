@@ -13,7 +13,6 @@ function Navbar() {
             Thuun
           </Link>
           <div class="flex items-center">
-            <Link href="/">Home</Link>
             <Show when={user}>
               <Link href="/">Profile</Link>
               <Link href="/api/auth/signout" target="_self">
