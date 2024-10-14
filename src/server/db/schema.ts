@@ -45,7 +45,7 @@ export const entityPropValue = sqliteTable("entity_prop_value", {
 
 export const dailyEntity = sqliteTable("daily_entity", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  day: integer("day", { mode: "timestamp" }).notNull(),
+  day: integer("day", { mode: "timestamp" }).unique().notNull(),
   entityId: integer("entity_id")
     .notNull()
     .references(() => entity.id, { onDelete: "cascade" }),

@@ -5,55 +5,32 @@ import dayjs from "dayjs";
 import { wrap } from "@typeschema/valibot";
 import { pipe, string, isoDateTime } from "valibot";
 import { privateProcedure } from "../utils";
-import type { DailyEntryWithEntity, GuessAnswer } from "~/lib/models";
-import { getTodayArtist } from "~/server/dailyPicker";
-import { dailyEntity, entityPropValue, userGuess } from "~/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import type { GuessAnswer } from "~/lib/models";
+import { getCurrentDate, touchTodayArtist } from "~/server/dailyPicker";
 import { logger } from "~/server/logger";
+import { compareEntities } from "~/server/comparator";
+import { findGuessedEntitiesForDay } from "~/entity-repository";
 
-function fromIsoOrNow(input?: string): dayjs.Dayjs {
+function fromIsoOrNow(input?: string): Date {
   if (input) {
     try {
-      return dayjs(input);
+      return dayjs(input).startOf("day").toDate();
     } catch (err) {
       logger.error("failed to parse date", input, err);
       throw new TRPCError({ code: "BAD_REQUEST" });
     }
   }
-  return dayjs();
+  return getCurrentDate();
 }
 
 export const listGuesses = privateProcedure
   .input(wrap(pipe(string(), isoDateTime())))
-  .query(async ({ ctx: { db, session }, input }): Promise<GuessAnswer[]> => {
+  .query(async ({ ctx: { session }, input }): Promise<GuessAnswer[]> => {
     const date = fromIsoOrNow(input);
-    let today: DailyEntryWithEntity;
-    try {
-      today = await getTodayArtist();
-    } catch (err) {
-      if (err instanceof TRPCError && err.code === "NOT_FOUND") {
-        return [];
-      }
-      throw err;
-    }
     if (!session?.user?.email) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
-    const guesses = await db
-      .select({ dailyEntity, entityPropValue })
-      .from(userGuess)
-      .innerJoin(dailyEntity, eq(userGuess.dailyEntryId, dailyEntity.id))
-      .innerJoin(
-        entityPropValue,
-        eq(dailyEntity.entityId, entityPropValue.entityId),
-      )
-      .where(
-        and(
-          eq(userGuess.userId, session.user?.email),
-          eq(dailyEntity.id, today.id),
-        ),
-      )
-      .orderBy(userGuess.createdAt)
-      .limit(10);
-    return guesses.map((x) => compareEntities(today.entity, x));
+    const today = await touchTodayArtist(date);
+    const guessess = await findGuessedEntitiesForDay(date, session.user?.email);
+    return guessess.map((x) => compareEntities(today.entity, x));
   });
