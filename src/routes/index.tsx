@@ -1,5 +1,8 @@
 import { Title } from "@solidjs/meta";
+import ArtistSelector from "~/components/ArtistSelector";
 import Counter from "~/components/Counter";
+import GuessList from "~/components/GuessList";
+import { Navbar } from "~/components/Navbar";
 import { cn } from "~/lib/cn";
 import { useSession } from "~/lib/session";
 
@@ -8,14 +11,16 @@ export default function Home() {
   return (
     <main
       class={cn(
-        "flex flex-col items-center justify-center gap-4 p-4 h-screen",
-        "bg-bg text-text",
+        "flex flex-col items-center justify-center gap-4",
+        "bg-bg text-text h-screen",
       )}
     >
+      <Navbar />
       <Title>Hello World</Title>
       <p>Session: {session?.user?.name || "None"}</p>
       <Counter />
-      <p>Hot reload works!</p>
+      <ArtistSelector />
+      <GuessList />
     </main>
   );
 }

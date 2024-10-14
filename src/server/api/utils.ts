@@ -2,7 +2,7 @@ import type { APIEvent } from "@solidjs/start/server";
 import { TRPCError, initTRPC } from "@trpc/server";
 import SuperJSON from "superjson";
 import { getSession } from "../auth";
-import { db } from "../database";
+import { db } from "../db/client";
 
 export const createContext = (event: APIEvent) => {
   return {
@@ -14,7 +14,6 @@ export const createContext = (event: APIEvent) => {
 export const t = initTRPC.context<typeof createContext>().create({
   transformer: SuperJSON,
   isServer: true,
-  errorFormatter: (err) => `${err.error.message}`,
 });
 
 export const createTRPCRouter = t.router;
@@ -25,5 +24,5 @@ export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next();
+  return next({ ctx: { ...ctx, session } });
 });

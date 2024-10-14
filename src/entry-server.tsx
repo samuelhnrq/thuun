@@ -2,8 +2,6 @@
 import { StartServer, createHandler } from "@solidjs/start/server";
 
 export default createHandler(() => {
-  // const session = await getSession(request);
-  // console.log('user is', session?.user?.name);
   return (
     <StartServer
       document={({ assets, children, scripts }) => (

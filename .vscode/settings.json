@@ -4,5 +4,8 @@
   "editor.detectIndentation": false,
   "[postcss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "cweijan.vscode-database-client2"
   }
 }

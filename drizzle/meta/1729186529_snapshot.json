@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e8c9ecdc-3c45-454b-8c39-e5911e219a5e",
+  "id": "25e33fc7-e37b-4892-b604-28cd7e2ccf3c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "daily_etity": {
-      "name": "daily_etity",
+    "daily_entity": {
+      "name": "daily_entity",
       "columns": {
         "id": {
           "name": "id",
@@ -21,27 +21,35 @@
           "notNull": true,
           "autoincrement": false
         },
-        "entity": {
-          "name": "entity",
+        "entity_id": {
+          "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "daily_entity_day_unique": {
+          "name": "daily_entity_day_unique",
+          "columns": [
+            "day"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
-        "daily_etity_entity_entity_id_fk": {
-          "name": "daily_etity_entity_entity_id_fk",
-          "tableFrom": "daily_etity",
+        "daily_entity_entity_id_entity_id_fk": {
+          "name": "daily_entity_entity_id_entity_id_fk",
+          "tableFrom": "daily_entity",
           "tableTo": "entity",
           "columnsFrom": [
-            "entity"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -58,9 +66,9 @@
           "notNull": true,
           "autoincrement": true
         },
-        "kind": {
-          "name": "kind",
-          "type": "integer",
+        "entity_kind": {
+          "name": "entity_kind",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -97,51 +105,6 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "entity_kind_entity_kind_id_fk": {
-          "name": "entity_kind_entity_kind_id_fk",
-          "tableFrom": "entity",
-          "tableTo": "entity_kind",
-          "columnsFrom": [
-            "kind"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "entity_kind": {
-      "name": "entity_kind",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "entity_kind_name_unique": {
-          "name": "entity_kind_name_unique",
-          "columns": [
-            "name"
-          ],
-          "isUnique": true
-        }
-      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
@@ -163,30 +126,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "kind": {
-          "name": "kind",
-          "type": "integer",
+        "prop_kind": {
+          "name": "prop_kind",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "entity_prop_kind_entity_kind_id_fk": {
-          "name": "entity_prop_kind_entity_kind_id_fk",
-          "tableFrom": "entity_prop",
-          "tableTo": "entity_kind",
-          "columnsFrom": [
-            "kind"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -200,15 +149,15 @@
           "notNull": true,
           "autoincrement": true
         },
-        "entity": {
-          "name": "entity",
+        "entity_id": {
+          "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "prop": {
-          "name": "prop",
+        "prop_id": {
+          "name": "prop_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -224,12 +173,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "entity_prop_value_entity_entity_id_fk": {
-          "name": "entity_prop_value_entity_entity_id_fk",
+        "entity_prop_value_entity_id_entity_id_fk": {
+          "name": "entity_prop_value_entity_id_entity_id_fk",
           "tableFrom": "entity_prop_value",
           "tableTo": "entity",
           "columnsFrom": [
-            "entity"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
@@ -237,12 +186,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "entity_prop_value_prop_entity_prop_id_fk": {
-          "name": "entity_prop_value_prop_entity_prop_id_fk",
+        "entity_prop_value_prop_id_entity_prop_id_fk": {
+          "name": "entity_prop_value_prop_id_entity_prop_id_fk",
           "tableFrom": "entity_prop_value",
           "tableTo": "entity_prop",
           "columnsFrom": [
-            "prop"
+            "prop_id"
           ],
           "columnsTo": [
             "id"
@@ -271,8 +220,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "day": {
-          "name": "day",
+        "entity_id": {
+          "name": "entity_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "daily_entity_id": {
+          "name": "daily_entity_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -289,12 +245,25 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "user_guess_day_daily_etity_id_fk": {
-          "name": "user_guess_day_daily_etity_id_fk",
+        "user_guess_entity_id_entity_id_fk": {
+          "name": "user_guess_entity_id_entity_id_fk",
           "tableFrom": "user_guess",
-          "tableTo": "daily_etity",
+          "tableTo": "entity",
           "columnsFrom": [
-            "day"
+            "entity_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "user_guess_daily_entity_id_daily_entity_id_fk": {
+          "name": "user_guess_daily_entity_id_daily_entity_id_fk",
+          "tableFrom": "user_guess",
+          "tableTo": "daily_entity",
+          "columnsFrom": [
+            "daily_entity_id"
           ],
           "columnsTo": [
             "id"

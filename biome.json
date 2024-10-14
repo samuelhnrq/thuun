@@ -15,13 +15,8 @@
       "style": {
         "noNamespace": "off",
         "noDefaultExport": "off",
-        "useNamingConvention": {
-          "level": "warn",
-          "options": {
-            "enumMemberCase": "CONSTANT_CASE",
-            "strictCase": false
-          }
-        }
+        "useNamingConvention": "off",
+        "useConst": "error"
       }
     }
   },
