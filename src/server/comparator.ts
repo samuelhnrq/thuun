@@ -1,5 +1,6 @@
 import "server-only";
 
+import S from "sanctuary";
 import type {
   EntityWithProps,
   GuessAnswer,
@@ -8,7 +9,6 @@ import type {
   PropWithValue,
 } from "~/lib/models";
 import type { EntityPropKind } from "./db/schema";
-import S from "sanctuary";
 
 const COMPARISON_FUNCTIONS: Record<
   EntityPropKind,

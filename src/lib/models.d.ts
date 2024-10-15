@@ -1,7 +1,7 @@
 import type {
-  entity,
-  dailyEntity,
   EntityPropKind,
+  dailyEntity,
+  entity,
   entityProp,
   entityPropValue,
 } from "~/server/db/schema";

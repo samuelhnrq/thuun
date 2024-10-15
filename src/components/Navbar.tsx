@@ -1,6 +1,6 @@
+import { Show } from "solid-js";
 import { useSession } from "~/lib/session";
 import { Link } from "./Link";
-import { Show } from "solid-js";
 
 function Navbar() {
   const session = useSession();
@@ -12,7 +12,7 @@ function Navbar() {
           <Link href="/" class="text-white text-2xl font-bold no-underline">
             Thuun
           </Link>
-          <div class="flex items-center">
+          <div class="flex items-center justify-end">
             <Show when={user}>
               <Link href="/">Profile</Link>
               <Link href="/api/auth/signout" target="_self">
