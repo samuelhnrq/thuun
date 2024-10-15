@@ -1,42 +1,24 @@
 import "server-only";
 
-import type { GuessAnswer } from "@/lib/models";
-import { db } from "@/server/db";
-import { compareEntities } from "@/server/lib/comparator";
-import {
-  INCLUDE_ENTITY_WITH_PROPS,
-  getTodayArtist,
-} from "@/server/lib/dailyPicker";
-import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure } from "../trpc";
+import { privateProcedure } from "../utils";
+import { wrap } from "@typeschema/valibot";
+import { number, pipe, minValue, integer } from "valibot";
+import { db } from "~/server/database";
+import type { GuessAnswer } from "~/lib/models";
+import { userGuess } from "~/server/db/schema";
+import { touchTodayArtist } from "~/server/dailyPicker";
 
-function isUniqueError(err: unknown): boolean {
-  return (
-    err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P202"
-  );
-}
-
-export const guessArtist = protectedProcedure
-  .input(z.number().positive())
+export const guessArtist = privateProcedure
+  .input(wrap(pipe(number(), integer(), minValue(0))))
   .mutation(
     async ({ input: artistId, ctx: { session } }): Promise<GuessAnswer> => {
-      const guessedArtist = await db.entity.findUniqueOrThrow({
-        where: { id: artistId },
-        include: { props: { include: { prop: true } } },
-      });
-      const todayAnswer = await getTodayArtist();
+      const todayAnswer = await touchTodayArtist();
       try {
-        const guess = await db.userGuess.create({
-          data: {
-            userId: session.user?.email || "",
-            dayId: todayAnswer.id,
-            guessId: artistId,
-          },
-          include: {
-            guess: { include: INCLUDE_ENTITY_WITH_PROPS.entity.include },
-          },
+        await db.insert(userGuess).values({
+          dailyEntityId: todayAnswer.id,
+          userId: session.user?.email || "",
+          entityId: artistId,
         });
         return compareEntities(guessedArtist, guess);
       } catch (err) {

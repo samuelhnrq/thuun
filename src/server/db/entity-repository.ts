@@ -6,15 +6,15 @@ import type {
   EntityPropValue,
   EntityWithProps,
   PropWithValue,
-} from "./lib/models";
-import { db } from "./server/database";
+} from "../../lib/models";
+import { db } from "../database";
 import {
   dailyEntity,
   entity,
   entityProp,
   entityPropValue as propValue,
   userGuess,
-} from "./server/db/schema";
+} from "./schema";
 
 interface JoinedResult {
   entity: Entity;

@@ -9,7 +9,7 @@ import type { GuessAnswer } from "~/lib/models";
 import { getCurrentDate, touchTodayArtist } from "~/server/dailyPicker";
 import { logger } from "~/server/logger";
 import { compareEntities } from "~/server/comparator";
-import { findGuessedEntitiesForDay } from "~/entity-repository";
+import { findGuessedEntitiesForDay } from "~/server/db/entity-repository";
 
 function fromIsoOrNow(input?: string): Date {
   if (input) {

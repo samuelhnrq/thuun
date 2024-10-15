@@ -5,7 +5,7 @@ import { count, sql } from "drizzle-orm";
 import type { DailyEntryWithEntity, Entity } from "~/lib/models";
 import { logger } from "./logger";
 import { db } from "./database";
-import { findDailyEntryForDay } from "~/entity-repository";
+import { findDailyEntryForDay } from "~/server/db/entity-repository";
 
 export function getCurrentDate(input?: string): Date {
   let base = dayjs();
