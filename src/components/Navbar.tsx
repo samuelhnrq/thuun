@@ -6,7 +6,7 @@ function Navbar() {
   const session = useSession();
   const user = session?.user;
   return (
-    <div class="bg-gray-800">
+    <div class="bg-gray-800 fixed top-0 left-0 z-50 w-screen">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
           <Link href="/" class="text-white text-2xl font-bold no-underline">

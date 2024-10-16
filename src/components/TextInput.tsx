@@ -1,21 +1,22 @@
-import { createSignal, type JSX } from "solid-js";
-import { cn } from "~/lib/cn";
 import {
   Input,
   Label,
   TextField,
   type TextFieldInputProps,
 } from "@kobalte/core/text-field";
+import { type JSX, createSignal } from "solid-js";
+import { cn } from "~/lib/cn";
 
 type Props = JSX.InputHTMLAttributes<HTMLInputElement> & TextFieldInputProps;
 
 function TextInput(props: Props) {
   const [val, setVal] = createSignal("");
+  const value = () => val() || props.value;
   return (
     <TextField>
       <Label
         class={cn("block text-sm font-medium text-text/75", {
-          "text-transparent": !(val() || props.value),
+          "text-transparent": !value(),
         })}
       >
         {props.placeholder}
@@ -24,7 +25,7 @@ function TextInput(props: Props) {
         class={cn(
           "bg-bg text-text",
           "focus:outline-none focus:border-b-primary",
-          "border-b-2 border-b-gray-500"
+          "border-b-2 border-b-gray-500",
         )}
         type="text"
         placeholder=""
