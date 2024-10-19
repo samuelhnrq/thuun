@@ -2,7 +2,7 @@ import { Subject, debounceTime, shareReplay, switchMap } from "rxjs";
 import { Show, createSignal, from } from "solid-js";
 import { api } from "~/lib/api";
 import type { ArtistSearchResult } from "~/lib/models";
-import { Combobox } from "./AppCombobox";
+import { Combobox } from "./Combobox";
 import { Loading } from "./Loading";
 
 const textInput = new Subject<string>();

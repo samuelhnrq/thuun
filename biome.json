@@ -13,6 +13,12 @@
         "useImportExtensions": "off"
       },
       "style": {
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case", "export"]
+          }
+        },
         "noNamespace": "off",
         "noDefaultExport": "off",
         "useNamingConvention": "off",

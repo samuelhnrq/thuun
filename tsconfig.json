@@ -1,9 +1,10 @@
 {
-  "extends": "@tsconfig/bun/tsconfig.json",
   "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "allowSyntheticDefaultImports": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": true,
@@ -14,10 +15,17 @@
     "allowJs": true,
     "strict": true,
     "noEmit": true,
-    "types": ["vinxi/types/client"],
+    "types": ["vinxi/types/client", "bun-types"],
     "isolatedModules": true,
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+     // Bundler mode
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    // Best practices
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
   }
 }
