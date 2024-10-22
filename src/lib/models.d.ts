@@ -18,6 +18,12 @@ export type DailyEntry = typeof dailyEntity.$inferSelect;
 export type EntityProp = typeof entityProp.$inferSelect;
 export type EntityPropValue = typeof entityPropValue.$inferSelect;
 
+export interface JoinedResult {
+  entity: Entity;
+  entityPropValue: EntityPropValue;
+  entityProp: EntityProp;
+}
+
 export interface PropWithValue extends EntityProp {
   value: string;
 }

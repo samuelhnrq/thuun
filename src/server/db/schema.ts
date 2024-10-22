@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 const entityKinds = ["ARTIST"] as const;
 
@@ -51,16 +51,22 @@ export const dailyEntity = sqliteTable("daily_entity", {
     .references(() => entity.id, { onDelete: "cascade" }),
 });
 
-export const userGuess = sqliteTable("user_guess", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
-  entityId: integer("entity_id")
-    .notNull()
-    .references(() => entity.id),
-  dailyEntityId: integer("daily_entity_id")
-    .notNull()
-    .references(() => dailyEntity.id, { onDelete: "cascade" }),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(UNIXEPOCH())`),
-});
+export const userGuess = sqliteTable(
+  "user_guess",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull(),
+    entityId: integer("entity_id")
+      .notNull()
+      .references(() => entity.id),
+    dailyEntityId: integer("daily_entity_id")
+      .notNull()
+      .references(() => dailyEntity.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(UNIXEPOCH())`),
+  },
+  (table) => ({
+    dailyGuess: unique().on(table.dailyEntityId, table.entityId, table.userId),
+  }),
+);

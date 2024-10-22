@@ -13,8 +13,9 @@ const client = createClient({
 
 export const db = drizzle(client, {
   logger: {
-    logQuery(query, params) {
-      logger.debug({ query, params }, "Query");
+    logQuery(originalQuery, params) {
+      const query = originalQuery.replace(/"/g, "`");
+      logger.trace({ query, params }, "Query");
     },
   },
 });

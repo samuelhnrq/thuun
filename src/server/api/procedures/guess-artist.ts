@@ -18,9 +18,10 @@ export const guessArtist = privateProcedure
         userId: session.user?.email || "",
         entityId: artistId,
       });
+      logger.info("%s guessed artist %s", session.user?.email, artistId);
     } catch (err) {
-      if (err instanceof LibsqlError) {
-        logger.info("Already guessed");
+      if (err instanceof LibsqlError && err.code === "SQLITE_CONSTRAINT") {
+        logger.warn("%s already guessed %s", session.user?.email, artistId);
         throw new TRPCError({
           code: "CONFLICT",
           message: "Artist already guessed",

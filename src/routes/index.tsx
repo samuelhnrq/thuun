@@ -1,4 +1,5 @@
 import { Title } from "@solidjs/meta";
+import { ErrorBoundary } from "solid-js";
 import ArtistSelector from "~/components/ArtistSelector";
 import Counter from "~/components/Counter";
 import GuessList from "~/components/GuessList";
@@ -19,8 +20,10 @@ export default function Home() {
       <Title>Hello World</Title>
       <p>Session: {session?.user?.name || "None"}</p>
       <Counter />
-      <ArtistSelector />
-      <GuessList />
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <ArtistSelector />
+        <GuessList />
+      </ErrorBoundary>
     </main>
   );
 }

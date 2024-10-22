@@ -1,12 +1,41 @@
-import S from "sanctuary";
+import { Array as Arr, pipe } from "effect";
 import type {
   EntityWithProps,
   GuessAnswer,
+  JoinedResult,
   NumericalPropComparison,
   PropComparison,
   PropWithValue,
 } from "~/lib/models";
 import type { EntityPropKind } from "./db/schema";
+
+function toPropWithValue(entry: JoinedResult): PropWithValue {
+  return {
+    ...entry.entityProp,
+    value: entry.entityPropValue.value,
+  };
+}
+
+function collapseResults([head, ...rest]: JoinedResult[]): EntityWithProps {
+  const initial: EntityWithProps = {
+    ...head.entity,
+    props: [toPropWithValue(head)],
+  };
+  return Arr.reduce(rest, initial, (acc, next) => {
+    acc.props.push(toPropWithValue(next));
+    return acc;
+  });
+}
+
+export function aggregateEntityProps(
+  entries: JoinedResult[],
+): EntityWithProps[] {
+  return pipe(
+    Arr.groupBy(entries, (x) => x.entity.id.toString()),
+    Object.values,
+    Arr.map(collapseResults),
+  );
+}
 
 const COMPARISON_FUNCTIONS: Record<
   EntityPropKind,
@@ -76,27 +105,31 @@ function compareCategoricalProp(
   };
 }
 
-const compareProp = S.curry2(
-  (guess: PropWithValue, answer: PropWithValue): PropComparison => {
-    if (guess.id !== answer.id) {
-      throw new Error("Props not equal");
-    }
-    return COMPARISON_FUNCTIONS[guess.propKind](guess, answer);
-  },
-);
+function compareProp(
+  guess: PropWithValue,
+  answer: PropWithValue,
+): PropComparison {
+  if (guess.id !== answer.id) {
+    throw new Error("Props not equal");
+  }
+  return COMPARISON_FUNCTIONS[guess.propKind](guess, answer);
+}
 
 export function compareEntities(
   answer: EntityWithProps,
   guess: EntityWithProps,
 ): Readonly<GuessAnswer> {
-  const propSorter = S.sortBy<PropWithValue>(S.prop("id"));
-  const guessProps = propSorter(guess.props);
-  const answerProps = propSorter(answer.props);
-  const comparisions = S.zipWith(compareProp)(guessProps)(answerProps);
-  return {
+  const comparisions = pipe(
+    Arr.appendAll(guess.props, answer.props),
+    Arr.groupBy((x) => x.id.toString()),
+    Object.values,
+    Arr.map(([x, y]: [PropWithValue, PropWithValue]) => compareProp(x, y)),
+  );
+  const result: GuessAnswer = {
     id: guess.id.toString(),
     artist: guess,
-    correct: S.all(S.prop("correct"))(comparisions) && guess.id === answer.id,
+    correct: guess.id === answer.id,
     comparisions,
   };
+  return result;
 }

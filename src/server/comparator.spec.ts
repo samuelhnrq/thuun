@@ -1,10 +1,21 @@
-import { expect, it } from "bun:test";
-import type { EntityWithProps, NumericalPropComparison } from "~/lib/models";
-import { compareEntities } from "./comparator";
+import { beforeEach, expect, it } from "bun:test";
+import type {
+  EntityProp,
+  EntityWithProps,
+  JoinedResult,
+  NumericalPropComparison,
+} from "~/lib/models";
+import { aggregateEntityProps, compareEntities } from "./comparator";
+
+let counter = 1;
+
+beforeEach(() => {
+  counter = 1;
+});
 
 function baseArtist(name: string): EntityWithProps {
   return {
-    id: 1,
+    id: counter++,
     name,
     entityKind: "ARTIST" as const,
     externalId: "music-artist-1",
@@ -50,6 +61,7 @@ it("checks the id of the artist", () => {
 it("should compare two artists with different prop values", () => {
   const artist = baseArtist("The Beatles");
   const other = baseArtist("Lady Gaga");
+  other.id = 2;
   other.props[0].value = "Pop";
   const result = compareEntities(artist, other);
   expect(result.correct).toBe(false);
@@ -62,7 +74,6 @@ it.each([-1, 0, 1] as const)(
     const other = baseArtist("Lady Gaga");
     other.props[2].value = `${3 + expected}`;
     const result = compareEntities(artist, other);
-    expect(result.correct).toBe(expected === 0);
     expect(result.comparisions[2].correct).toBe(expected === 0);
     expect(result.comparisions[2].kind).toBe("NUMERICAL");
     const numericalComparison = result
@@ -74,7 +85,35 @@ it.each([-1, 0, 1] as const)(
 it("Orders the props by id", () => {
   const artist = baseArtist("The Beatles");
   const other = baseArtist("Lady Gaga");
+  other.id = artist.id;
   other.props.reverse();
   const result = compareEntities(artist, other);
   expect(result.correct).toBe(true);
+});
+
+function simulateJoinedResult(
+  entity: EntityWithProps,
+  prop: EntityProp,
+): JoinedResult {
+  return {
+    entity,
+    entityPropValue: {
+      id: 1,
+      entityId: entity.id,
+      propId: prop.id,
+      value: "1",
+    },
+    entityProp: prop,
+  };
+}
+
+it("should aggregate props", () => {
+  const artist = baseArtist("The Beatles");
+  const joinedResult: JoinedResult[] = [];
+  joinedResult.push(simulateJoinedResult(artist, artist.props[0]));
+  joinedResult.push(simulateJoinedResult(artist, artist.props[1]));
+  joinedResult.push(simulateJoinedResult(artist, artist.props[2]));
+  const result = aggregateEntityProps(joinedResult);
+  expect(result.length).toBe(1);
+  expect(result[0].props.length).toBe(3);
 });

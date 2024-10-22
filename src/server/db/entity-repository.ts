@@ -1,12 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import type {
-  DailyEntryWithEntity,
-  Entity,
-  EntityProp,
-  EntityPropValue,
-  EntityWithProps,
-  PropWithValue,
-} from "../../lib/models";
+import type { DailyEntryWithEntity, EntityWithProps } from "../../lib/models";
+import { aggregateEntityProps } from "../comparator";
 import { logger } from "../logger";
 import { db } from "./client";
 import {
@@ -16,39 +10,6 @@ import {
   entityPropValue as propValue,
   userGuess,
 } from "./schema";
-
-interface JoinedResult {
-  entity: Entity;
-  entityPropValue: EntityPropValue;
-  entityProp: EntityProp;
-}
-
-function toPropWithValue(entry: JoinedResult): PropWithValue {
-  return {
-    ...entry.entityProp,
-    value: entry.entityPropValue.value,
-  };
-}
-
-function aggregateEntityProps(entries: JoinedResult[]): EntityWithProps[] {
-  return Object.values(
-    entries.reduce(
-      (acc, entry) => {
-        const existing = acc[entry.entity.id];
-        if (existing) {
-          existing.props.push(toPropWithValue(entry));
-        } else {
-          acc[entry.entity.id] = {
-            ...entry.entity,
-            props: [toPropWithValue(entry)],
-          };
-        }
-        return acc;
-      },
-      {} as Record<number, EntityWithProps>,
-    ),
-  );
-}
 
 export async function findGuessedEntitiesForDay(
   date: Date,
@@ -66,9 +27,17 @@ export async function findGuessedEntitiesForDay(
   return aggregateEntityProps(guesses);
 }
 
+const dailyArtistCache = new Map<string, DailyEntryWithEntity>();
+
 export async function findDailyEntryForDay(
   date: Date,
 ): Promise<DailyEntryWithEntity | null> {
+  const cacheKey = date.toISOString();
+  const cached = dailyArtistCache.get(cacheKey);
+  if (cached) {
+    logger.debug("Found cached artist for %s", cacheKey);
+    return cached;
+  }
   const entries = await db
     .select({ dailyEntity, entity, entityPropValue: propValue, entityProp })
     .from(dailyEntity)
@@ -88,5 +57,7 @@ export async function findDailyEntryForDay(
     throw new Error("More than one entity found");
   }
   logger.info("Fetched artist of the day", aggregated[0].name);
-  return { ...entries[0].dailyEntity, entity: aggregated[0] };
+  const entry = { ...entries[0].dailyEntity, entity: aggregated[0] };
+  dailyArtistCache.set(cacheKey, entry);
+  return entry;
 }

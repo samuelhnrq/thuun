@@ -1,5 +1,6 @@
+import { createMutation, useQueryClient } from "@tanstack/solid-query";
 import { Subject, debounceTime, shareReplay, switchMap } from "rxjs";
-import { Show, createSignal, from } from "solid-js";
+import { Show, createSignal, from, onMount } from "solid-js";
 import { api } from "~/lib/api";
 import type { ArtistSearchResult } from "~/lib/models";
 import { Combobox } from "./Combobox";
@@ -15,6 +16,27 @@ const textInput$ = textInput.asObservable().pipe(
 export default function ArtistSelector() {
   const [artist, setArtist] = createSignal<ArtistSearchResult | null>(null);
   const [disabled, setDisabled] = createSignal(false);
+  const client = useQueryClient();
+  const mutation = createMutation(() => ({
+    mutationKey: ["guessArtist"],
+    mutationFn: async (value: ArtistSearchResult) => {
+      await api.guessArtist.mutate(value.id);
+    },
+    onMutate(value) {
+      setArtist(value);
+      setDisabled(true);
+      document.body.focus();
+    },
+    onSettled: async () => {
+      setArtist(null);
+      setDisabled(false);
+      await client.invalidateQueries({
+        queryKey: ["listGuesses"],
+        exact: false,
+      });
+    },
+  }));
+  onMount(() => textInput.next(""));
   const [text, setText] = createSignal("");
   const options = from(textInput$);
   return (
@@ -27,17 +49,12 @@ export default function ArtistSelector() {
         optionTextValue={(val) => val.name}
         optionValue={(val) => val.id}
         optionLabel={(val) => val.name}
-        onChange={async (value) => {
+        onChange={(value) => {
           if (!value) {
             setText("");
             return;
           }
-          setArtist(value);
-          setDisabled(true);
-          document.body.focus();
-          await api.guessArtist.mutate(value.id);
-          setArtist(null);
-          setDisabled(false);
+          mutation.mutate(value);
         }}
         onInputChange={(value) => {
           textInput.next(value);

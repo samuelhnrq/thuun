@@ -9,7 +9,7 @@ function Button({ children, ...rest }: ParentProps<Props>) {
     <BaseButton
       class={cn(
         "bg-primary text-slate-200 px-4 py-2 rounded-md",
-        "hover:brightness-110 focus:outline-none focus:ring-2",
+        "hover:brightness-110 focus:ring-1",
       )}
       {...rest}
     >

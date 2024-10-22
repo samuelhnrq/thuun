@@ -5,11 +5,12 @@ import { api } from "~/lib/api";
 function GuessList() {
   const res = createQuery(() => ({
     queryKey: ["listGuesses"],
+    experimental_prefetchInRender: true,
     queryFn: () => api.listGuesses.query(),
-    throwOnError: false, // Throw an error if the query fails
   }));
   return (
     <div>
+      We have {res.data?.length} guesses
       <For each={res.data}>
         {(x) => (
           <div>

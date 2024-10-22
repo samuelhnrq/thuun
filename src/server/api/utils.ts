@@ -21,7 +21,7 @@ export const publicProcedure = t.procedure;
 
 export const privateProcedure = t.procedure.use(async ({ ctx, next }) => {
   const session = await getSession(ctx.event.request);
-  if (!session?.user) {
+  if (!session?.user?.email) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({ ctx: { ...ctx, session } });
