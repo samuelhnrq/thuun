@@ -40,9 +40,9 @@ function AppCombobox<T>(outProps: Props<T>) {
       >
         {outProps.label}
       </Combobox.Label>
-      <Combobox.Control class="px-3 py-1">
+      <Combobox.Control class="px-3 py-1 w-full flex items-center">
         <Combobox.Input
-          class="focus:outline-none bg-bgDarker placeholder:text-text/25"
+          class="focus:outline-none flex-1 bg-bgDarker placeholder:text-text/25"
           {...outProps.inputProps}
         />
         <Combobox.Trigger>
@@ -59,7 +59,7 @@ function AppCombobox<T>(outProps: Props<T>) {
             "animate-contentHide ui-expanded:animate-contentShow rounded-md bg-bgDarker overflow-hidden",
           )}
         >
-          <Combobox.Arrow />
+          {/* <Combobox.Arrow /> */}
           <Combobox.Listbox />
         </Combobox.Content>
       </Combobox.Portal>

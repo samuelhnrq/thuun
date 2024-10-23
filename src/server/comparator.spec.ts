@@ -53,7 +53,6 @@ it("should compare two identical artists", () => {
 it("checks the id of the artist", () => {
   const artist = baseArtist("The Beatles");
   const other = baseArtist("The Beatles");
-  other.id = 2;
   const result = compareEntities(artist, other);
   expect(result.correct).toBe(false);
 });
@@ -61,10 +60,10 @@ it("checks the id of the artist", () => {
 it("should compare two artists with different prop values", () => {
   const artist = baseArtist("The Beatles");
   const other = baseArtist("Lady Gaga");
-  other.id = 2;
   other.props[0].value = "Pop";
   const result = compareEntities(artist, other);
   expect(result.correct).toBe(false);
+  expect(result.comparisions[0].correct).toBe(false);
 });
 
 it.each([-1, 0, 1] as const)(
@@ -72,7 +71,7 @@ it.each([-1, 0, 1] as const)(
   (expected) => {
     const artist = baseArtist("The Beatles");
     const other = baseArtist("Lady Gaga");
-    other.props[2].value = `${3 + expected}`;
+    other.props[2].value = `${3 + 5 * expected}`;
     const result = compareEntities(artist, other);
     expect(result.comparisions[2].correct).toBe(expected === 0);
     expect(result.comparisions[2].kind).toBe("NUMERICAL");

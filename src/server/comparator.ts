@@ -118,12 +118,12 @@ function compareProp(
 export function compareEntities(
   answer: EntityWithProps,
   guess: EntityWithProps,
-): Readonly<GuessAnswer> {
+): GuessAnswer {
   const comparisions = pipe(
     Arr.appendAll(guess.props, answer.props),
     Arr.groupBy((x) => x.id.toString()),
     Object.values,
-    Arr.map(([x, y]: [PropWithValue, PropWithValue]) => compareProp(x, y)),
+    Arr.map(([x, y]) => compareProp(x, y)),
   );
   const result: GuessAnswer = {
     id: guess.id.toString(),

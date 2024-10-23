@@ -1,29 +1,19 @@
-import { Title } from "@solidjs/meta";
 import { ErrorBoundary } from "solid-js";
 import ArtistSelector from "~/components/ArtistSelector";
-import Counter from "~/components/Counter";
 import GuessList from "~/components/GuessList";
 import { Navbar } from "~/components/Navbar";
 import { cn } from "~/lib/cn";
-import { useSession } from "~/lib/session";
 
 export default function Home() {
-  const session = useSession();
   return (
-    <main
-      class={cn(
-        "flex flex-col items-center justify-center gap-4",
-        "bg-bg text-text h-screen",
-      )}
-    >
+    <main class={cn("flex flex-col bg-bg text-text h-screen")}>
       <Navbar />
-      <Title>Hello World</Title>
-      <p>Session: {session?.user?.name || "None"}</p>
-      <Counter />
-      <ErrorBoundary fallback={<div>Something went wrong</div>}>
-        <ArtistSelector />
-        <GuessList />
-      </ErrorBoundary>
+      <div class="flex flex-col gap-4 flex-1 justify-center align-middle px-5">
+        <ErrorBoundary fallback={<div>Something went wrong</div>}>
+          <ArtistSelector />
+          <GuessList />
+        </ErrorBoundary>
+      </div>
     </main>
   );
 }
