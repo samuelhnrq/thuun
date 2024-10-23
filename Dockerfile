@@ -39,9 +39,9 @@ RUN bun run biome ci && \
 FROM base AS runtime
 
 # Copy built application
-COPY --from=build /app /app
+COPY --from=build /app/.output /app/
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 
-CMD [ "sh", "-c", "bun run .output/server/index.mjs" ]
+CMD [ "sh", "-c", "bun run ./server/index.mjs" ]
