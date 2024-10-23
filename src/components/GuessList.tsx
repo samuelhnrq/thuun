@@ -1,7 +1,7 @@
 import { createQuery } from "@tanstack/solid-query";
 import { For } from "solid-js";
-import { api } from "~/lib/api";
 import type { GuessAnswer, PropComparison } from "~/lib/models";
+import { listGuesses } from "~/server/api/procedures/list-guesses";
 
 function Comparision(comparision: PropComparison) {
   return (
@@ -30,7 +30,7 @@ function GuessList() {
   const res = createQuery(() => ({
     queryKey: ["listGuesses"],
     experimental_prefetchInRender: true,
-    queryFn: () => api.listGuesses.query(),
+    queryFn: () => listGuesses(),
     reconcile: "artist.id",
   }));
   return (
@@ -41,5 +41,4 @@ function GuessList() {
   );
 }
 
-export default GuessList;
 export { GuessList };

@@ -29,7 +29,10 @@ COPY . .
 
 # Build application
 RUN bun run biome ci && \
-    export AUTH_SECRET="$(bun -e 'console.log(await Bun.password.hash(Date.now()))')" && \
+    bun test && \
+    AUTH_SECRET="$(bun -e 'console.log(await Bun.password.hash(Date.now()))')" \
+    AUTH_TRUST_HOST=true \
+    TURSO_DATABASE_URL=http://fake.url.com:9999 \
     bun run --bun build
 
 # Final stage for app image

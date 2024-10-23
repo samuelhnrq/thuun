@@ -4,6 +4,7 @@ import {
   type SolidAuthConfig,
   getSession as innerGetSession,
 } from "@auth/solid-start";
+import { getRequestEvent } from "solid-js/web";
 
 const config: SolidAuthConfig = {
   basePath: "/api/auth",
@@ -18,6 +19,20 @@ const config: SolidAuthConfig = {
 
 export const auth = SolidAuth(config);
 
-export const getSession = (request: Request) => {
-  return innerGetSession(request, config);
-};
+export async function getSession() {
+  "use server";
+  const session = await findSession();
+  if (!session) {
+    throw new Error("No session");
+  }
+  return session;
+}
+
+export async function findSession() {
+  "use server";
+  const event = getRequestEvent();
+  if (!event?.request) {
+    throw new Error("No request");
+  }
+  return await innerGetSession(event.request, config);
+}

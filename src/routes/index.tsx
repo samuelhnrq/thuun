@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "solid-js";
 import ArtistSelector from "~/components/ArtistSelector";
-import GuessList from "~/components/GuessList";
+import { GuessList } from "~/components/GuessList";
 import { Navbar } from "~/components/Navbar";
 import { cn } from "~/lib/cn";
 

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/entry-client.tsx",
+    "src/entry-server.tsx",
+    "src/app.tsx",
+    "src/routes/**/*.{ts,tsx}",
+    "app.config.ts",
+    "drizzle.config.ts",
+    "drizzle/*.ts",
+    "biome.json"
+  ],
+  "ignore": ["src/**/*.spec.ts"],
+  "project": ["**/*.{js,ts,tsx}"]
+}

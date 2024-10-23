@@ -67,5 +67,4 @@ function AppCombobox<T>(outProps: Props<T>) {
   );
 }
 
-export default AppCombobox;
 export { AppCombobox as Combobox };
