@@ -30,16 +30,21 @@ COPY . .
 # Build application
 RUN bun run biome ci && \
     bun test && \
+    SERVER_PRESET=bun \
     AUTH_SECRET="$(bun -e 'console.log(await Bun.password.hash(Date.now()))')" \
     AUTH_TRUST_HOST=true \
     TURSO_DATABASE_URL=http://fake.url.com:9999 \
     bun run --bun build
 
 # Final stage for app image
-FROM base AS runtime
+FROM oven/bun:${BUN_VERSION}-alpine AS runtime
+
+USER bun
+WORKDIR /home/bun/app
 
 # Copy built application
-COPY --from=build /app/.output /app/
+COPY --from=build --chown=bun:bun /app/.output ./
+
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
