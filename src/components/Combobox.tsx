@@ -31,16 +31,19 @@ function AppCombobox<T>(outProps: Props<T>) {
       class={clsx(
         "focus:border-b-primary bg-bgDarker border-b-2 border-b-gray-500",
         "rounded-t-md py-1",
+        { "brightness-75": outProps.disabled },
       )}
       multiple={false}
       {...outProps}
     >
-      <Combobox.Label
-        class={clsx("block px-3 text-sm font-medium text-text/75")}
-      >
-        {outProps.label}
-      </Combobox.Label>
-      <Combobox.Control class="px-3 py-1 w-full flex items-center">
+      <Combobox.Control class="px-3 py-1 w-full flex items-center flex-wrap">
+        <Combobox.Label
+          class={clsx(
+            "flex-grow basis-[100%] text-sm font-medium text-text/75",
+          )}
+        >
+          {outProps.label}
+        </Combobox.Label>
         <Combobox.Input
           class="focus:outline-none flex-1 bg-bgDarker placeholder:text-text/25"
           {...outProps.inputProps}
@@ -56,7 +59,8 @@ function AppCombobox<T>(outProps: Props<T>) {
       <Combobox.Portal useShadow={false}>
         <Combobox.Content
           class={clsx(
-            "animate-contentHide ui-expanded:animate-contentShow rounded-md bg-bgDarker overflow-hidden",
+            "animate-contentHide ui-expanded:animate-contentShow rounded-md",
+            "bg-bgDarker overflow-hidden",
           )}
         >
           {/* <Combobox.Arrow /> */}

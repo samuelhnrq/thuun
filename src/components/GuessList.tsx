@@ -1,8 +1,7 @@
-import { createQuery } from "@tanstack/solid-query";
 import { For } from "solid-js";
 import type { GuessAnswer, PropComparison } from "~/lib/models";
 import { cn } from "~/lib/cn";
-import { listGuesses } from "~/server/api/procedures/list-guesses";
+import { useListGuesses } from "~/lib/use-list-guesses";
 
 function colorClassCorrect(correct: boolean) {
   return {
@@ -20,7 +19,12 @@ function Comparision(comparision: PropComparison) {
       )}
     >
       <h2 class="text-lg">{comparision.name}</h2>
-      <p class={cn(colorClassCorrect(comparision.correct), "text-2xl")}>
+      <p
+        class={cn(
+          colorClassCorrect(comparision.correct),
+          "text-2xl text-ellipsis overflow-hidden whitespace-nowrap",
+        )}
+      >
         {comparision.value}
       </p>
     </div>
@@ -42,12 +46,7 @@ function GuessedArtist(comparision: GuessAnswer) {
 }
 
 function GuessList() {
-  const res = createQuery(() => ({
-    queryKey: ["listGuesses"],
-    experimental_prefetchInRender: true,
-    queryFn: () => listGuesses(),
-    reconcile: "artist.id",
-  }));
+  const res = useListGuesses();
   return (
     <div class="max-h-[70vh] overflow-y-scroll">
       <For each={res.data}>{GuessedArtist}</For>
