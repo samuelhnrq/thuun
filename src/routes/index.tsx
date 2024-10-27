@@ -6,10 +6,17 @@ import { cn } from "~/lib/cn";
 
 export default function Home() {
   return (
-    <main class={cn("flex flex-col bg-bg text-text h-screen")}>
+    <main class={cn("flex flex-col bg-bg text-text h-screen items-center")}>
       <Navbar />
-      <div class="flex flex-col gap-4 flex-1 justify-center align-middle px-5">
-        <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <div
+        class={cn(
+          "flex flex-col gap-4 justify-center align-middle px-5",
+          "basis-[60vw] flex-grow min-w-[60vw]",
+        )}
+      >
+        <ErrorBoundary
+          fallback={(err) => <div>Something went wrong: {err}</div>}
+        >
           <ArtistSelector />
           <GuessList />
         </ErrorBoundary>

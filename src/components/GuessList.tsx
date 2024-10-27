@@ -1,25 +1,40 @@
 import { createQuery } from "@tanstack/solid-query";
 import { For } from "solid-js";
 import type { GuessAnswer, PropComparison } from "~/lib/models";
+import { cn } from "~/lib/cn";
 import { listGuesses } from "~/server/api/procedures/list-guesses";
+
+function colorClassCorrect(correct: boolean) {
+  return {
+    "text-red-700": !correct,
+    "text-green-600": correct,
+  };
+}
 
 function Comparision(comparision: PropComparison) {
   return (
-    <div>
-      <h2>{comparision.name}</h2>
-      <p>{comparision.kind}</p>
-      <p>{comparision.value}</p>
-      <h2>{comparision.correct ? "Correct" : "Wrong"}</h2>
+    <div
+      class={cn(
+        "bg-slate-500 dark:bg-gray-800 basis-[30%] flex-grow px-4 py-2",
+        "rounded-md ring-1 ring-slate-500",
+      )}
+    >
+      <h2 class="text-lg">{comparision.name}</h2>
+      <p class={cn(colorClassCorrect(comparision.correct), "text-2xl")}>
+        {comparision.value}
+      </p>
     </div>
   );
 }
 
 function GuessedArtist(comparision: GuessAnswer) {
   return (
-    <div>
-      <h1>{comparision.artist.name}</h1>
-      <p>{comparision.correct ? "Correct" : "Wrong"}</p>
-      <div class="flex gap-4">
+    <div class={cn("mb-3 border-1 p-4 rounded-md align-bottom")}>
+      <span class="text-2xl">{comparision.artist.name} </span>
+      <span class={cn(colorClassCorrect(comparision.correct), "font-bold")}>
+        {comparision.correct ? "Correct" : "Wrong"}
+      </span>
+      <div class="flex gap-4 flex-wrap justify-center">
         <For each={comparision.comparisions}>{Comparision}</For>
       </div>
     </div>
@@ -35,7 +50,6 @@ function GuessList() {
   }));
   return (
     <div class="max-h-[70vh] overflow-y-scroll">
-      We have {res.data?.length} guesses
       <For each={res.data}>{GuessedArtist}</For>
     </div>
   );

@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Raleway", "ui-sans-serif"],
+        sans: ["Raleway", "ui-sans-serif", "sans-serif"],
       },
       colors: {
         primary: "rgb(var(--color-primary))",
