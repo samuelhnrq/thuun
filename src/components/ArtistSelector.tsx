@@ -1,13 +1,6 @@
 import { createMutation, useQueryClient } from "@tanstack/solid-query";
 import { Subject, debounceTime, shareReplay, switchMap } from "rxjs";
-import {
-  Show,
-  createEffect,
-  createMemo,
-  createSignal,
-  from,
-  onMount,
-} from "solid-js";
+import { Show, createMemo, createSignal, from, onMount } from "solid-js";
 import type { ArtistSearchResult } from "~/lib/models";
 import { useListGuesses } from "~/lib/use-list-guesses";
 import { guessArtist } from "~/server/api/procedures/guess-artist";
