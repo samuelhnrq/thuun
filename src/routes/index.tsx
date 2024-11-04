@@ -4,6 +4,13 @@ import { GuessList } from "~/components/GuessList";
 import { Navbar } from "~/components/Navbar";
 import { cn } from "~/lib/cn";
 
+function ErrorHandler(err: Error) {
+  if (err.message === "No session") {
+    return <div>You are not logged in</div>;
+  }
+  return <div>Something went wrong: {err.message}</div>;
+}
+
 export default function Home() {
   return (
     <main class={cn("flex flex-col bg-bg text-text h-screen items-center")}>
@@ -14,9 +21,7 @@ export default function Home() {
           "basis-[60vw] flex-grow min-w-[60vw]",
         )}
       >
-        <ErrorBoundary
-          fallback={(err) => <div>Something went wrong: {err}</div>}
-        >
+        <ErrorBoundary fallback={ErrorHandler}>
           <ArtistSelector />
           <GuessList />
         </ErrorBoundary>
