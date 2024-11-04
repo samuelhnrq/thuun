@@ -33,6 +33,7 @@ function AppCombobox<T>(outProps: Props<T>) {
         "rounded-t-md py-1",
         { "brightness-75": outProps.disabled },
       )}
+      disabled={outProps.disabled}
       multiple={false}
       {...outProps}
     >

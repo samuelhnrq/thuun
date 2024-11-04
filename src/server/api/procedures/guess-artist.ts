@@ -1,17 +1,32 @@
 "use server";
 
 import { LibsqlError } from "@libsql/client";
-import { TRPCError } from "@trpc/server";
+import { and, count, eq } from "drizzle-orm";
 import { getSession } from "~/server/auth";
 import { touchTodayArtist } from "~/server/daily-picker";
 import { db } from "~/server/db/client";
 import { userGuess } from "~/server/db/schema";
+import { ConflictError, ThuunError } from "~/server/lib/errors";
 import { logger } from "~/server/logger";
 
 export async function guessArtist(artistId: number): Promise<void> {
   const session = await getSession();
   const todayAnswer = await touchTodayArtist();
   try {
+    const [{ found = 0 } = {}] = await db
+      .select({ found: count() })
+      .from(userGuess)
+      .where(
+        and(
+          eq(userGuess.dailyEntityId, todayAnswer.id),
+          eq(userGuess.userId, session.user?.email || ""),
+          eq(userGuess.entityId, todayAnswer.entityId),
+        ),
+      );
+    if (found > 0) {
+      logger.warn("answer already found");
+      throw new ConflictError("Response already found for today");
+    }
     await db.insert(userGuess).values({
       dailyEntityId: todayAnswer.id,
       userId: session.user?.email || "",
@@ -21,14 +36,8 @@ export async function guessArtist(artistId: number): Promise<void> {
   } catch (err) {
     if (err instanceof LibsqlError && err.code === "SQLITE_CONSTRAINT") {
       logger.warn("%s already guessed %s", session.user?.email, artistId);
-      throw new TRPCError({
-        code: "CONFLICT",
-        message: "Artist already guessed",
-      });
+      throw new ConflictError("Artist already guessed");
     }
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to create guess",
-    });
+    throw new ThuunError("Failed to create guess", { cause: err });
   }
 }

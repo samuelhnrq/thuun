@@ -5,6 +5,7 @@ import {
   getSession as innerGetSession,
 } from "@auth/solid-start";
 import { getRequestEvent } from "solid-js/web";
+import { UnauthorizedError } from "./lib/errors";
 
 const config: SolidAuthConfig = {
   basePath: "/api/auth",
@@ -23,7 +24,7 @@ export async function getSession() {
   "use server";
   const session = await findSession();
   if (!session) {
-    throw new Error("No session");
+    throw new UnauthorizedError("No session");
   }
   return session;
 }
@@ -32,7 +33,7 @@ export async function findSession() {
   "use server";
   const event = getRequestEvent();
   if (!event?.request) {
-    throw new Error("No request");
+    throw new UnauthorizedError("No request");
   }
   return await innerGetSession(event.request, config);
 }

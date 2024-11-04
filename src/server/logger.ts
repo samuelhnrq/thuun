@@ -1,7 +1,7 @@
 import pino from "pino";
 
 const options: pino.LoggerOptions = {
-  level: "debug",
+  level: process.env.LOG_LEVEL || "debug",
 };
 
 if (process.env.NODE_ENV !== "production") {
@@ -13,4 +13,4 @@ if (process.env.NODE_ENV !== "production") {
   };
 }
 
-export const logger = pino(options);
+export const logger = pino(options, pino.destination({ sync: false }));

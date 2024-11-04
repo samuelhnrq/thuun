@@ -1,10 +1,10 @@
-import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
 import { count, eq } from "drizzle-orm";
 import type { DailyEntryWithEntity, Entity } from "~/lib/models";
 import { findDailyEntryForDay } from "~/server/db/entity-repository";
 import { db } from "./db/client";
 import { dailyEntity, entity } from "./db/schema";
+import { BadRequestError, NotFoundError } from "./lib/errors";
 import { logger } from "./logger";
 
 export function getCurrentDate(input?: string): Date {
@@ -14,7 +14,7 @@ export function getCurrentDate(input?: string): Date {
       base = dayjs(input);
     } catch (err) {
       logger.error("failed to parse date", input, err);
-      throw new TRPCError({ code: "BAD_REQUEST" });
+      throw new BadRequestError();
     }
   }
   return base.startOf("day").toDate();
@@ -27,7 +27,7 @@ async function createDailyEntry(): Promise<void> {
     .from(entity);
   if (totalEntities === 0) {
     logger.error("Database is empty");
-    throw new TRPCError({ code: "NOT_FOUND" });
+    throw new NotFoundError();
   }
   logger.info("No artist for today, running dice");
   let randomArtist: Entity | null = null;
@@ -68,7 +68,7 @@ export async function touchTodayArtist(
   await createDailyEntry();
   const newToday = await findDailyEntryForDay(date);
   if (!newToday) {
-    throw new TRPCError({ code: "NOT_FOUND" });
+    throw new NotFoundError();
   }
   return newToday;
 }

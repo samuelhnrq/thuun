@@ -1,4 +1,4 @@
-import { Array as Arr, pipe } from "effect";
+import { Array as Arr, Order, pipe } from "effect";
 import type {
   EntityWithProps,
   GuessAnswer,
@@ -8,6 +8,7 @@ import type {
   PropWithValue,
 } from "~/lib/models";
 import type { EntityPropKind } from "./db/schema";
+import { ThuunError } from "./lib/errors";
 
 function toPropWithValue(entry: JoinedResult): PropWithValue {
   return {
@@ -34,6 +35,7 @@ export function aggregateEntityProps(
     Arr.groupBy(entries, (x) => x.entity.id.toString()),
     Object.values,
     Arr.map(collapseResults),
+    Arr.sortWith((x) => x.createdAt, Order.Date),
   );
 }
 
@@ -110,7 +112,7 @@ function compareProp(
   answer: PropWithValue,
 ): PropComparison {
   if (guess.id !== answer.id) {
-    throw new Error("Props not equal");
+    throw new ThuunError("Props not equal");
   }
   return COMPARISON_FUNCTIONS[guess.propKind](guess, answer);
 }

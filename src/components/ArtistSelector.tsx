@@ -1,12 +1,19 @@
 import { createMutation, useQueryClient } from "@tanstack/solid-query";
 import { Subject, debounceTime, shareReplay, switchMap } from "rxjs";
-import { Show, createSignal, from, onMount, createMemo } from "solid-js";
+import {
+  Show,
+  createEffect,
+  createMemo,
+  createSignal,
+  from,
+  onMount,
+} from "solid-js";
 import type { ArtistSearchResult } from "~/lib/models";
+import { useListGuesses } from "~/lib/use-list-guesses";
 import { guessArtist } from "~/server/api/procedures/guess-artist";
 import { searchArtist } from "~/server/api/procedures/search-artist";
 import { Combobox } from "./Combobox";
 import { Loading } from "./Loading";
-import { useListGuesses } from "~/lib/use-list-guesses";
 
 const textInput = new Subject<string>();
 const textInput$ = textInput.asObservable().pipe(
@@ -49,7 +56,7 @@ export default function ArtistSelector() {
         options={options() || []}
         label="Artist"
         value={artist()}
-        disabled={disabled() || guessList.isPending || !!answerFound()}
+        disabled={disabled() || !!answerFound()}
         optionTextValue={(val) => val.name}
         optionValue={(val) => val.id}
         optionLabel={(val) => val.name}

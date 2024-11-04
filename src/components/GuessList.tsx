@@ -1,6 +1,6 @@
 import { For } from "solid-js";
-import type { GuessAnswer, PropComparison } from "~/lib/models";
 import { cn } from "~/lib/cn";
+import type { GuessAnswer, PropComparison } from "~/lib/models";
 import { useListGuesses } from "~/lib/use-list-guesses";
 
 function colorClassCorrect(correct: boolean) {

@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import type { DailyEntryWithEntity, EntityWithProps } from "../../lib/models";
 import { aggregateEntityProps } from "../comparator";
+import { ConflictError, NotFoundError } from "../lib/errors";
 import { logger } from "../logger";
 import { db } from "./client";
 import {
@@ -51,10 +52,10 @@ export async function findDailyEntryForDay(
   const aggregated = aggregateEntityProps(entries);
 
   if (aggregated.length === 0) {
-    throw new Error("No entities found");
+    throw new NotFoundError("No entities found");
   }
   if (aggregated.length > 1) {
-    throw new Error("More than one entity found");
+    throw new ConflictError("More than one entity found");
   }
   logger.info("Fetched artist of the day", aggregated[0].name);
   const entry = { ...entries[0].dailyEntity, entity: aggregated[0] };

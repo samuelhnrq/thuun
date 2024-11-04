@@ -1,5 +1,5 @@
 {
-  "name": "example-with-trpc",
+  "name": "thuun",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
@@ -20,8 +20,6 @@
     "@solidjs/start": "^1.0.9",
     "@tanstack/solid-query": "^5.59.16",
     "@tanstack/solid-query-devtools": "^5.59.16",
-    "@trpc/server": "^11.0.0-rc.593",
-    "@typeschema/valibot": "^0.14.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.35.3",
@@ -31,7 +29,6 @@
     "solid-icons": "^1.1.0",
     "solid-js": "^1.9.3",
     "tailwind-merge": "^2.5.4",
-    "valibot": "^0.42.1",
     "vinxi": "^0.4.3"
   },
   "engines": {
