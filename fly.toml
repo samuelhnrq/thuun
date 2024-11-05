@@ -7,7 +7,6 @@ app = 'thuun'
 primary_region = 'cdg'
 
 [deploy]
-release_command = "bunx drizzle-kit migrate"
 
 [build]
 
