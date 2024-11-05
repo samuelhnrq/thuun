@@ -14,6 +14,6 @@ export async function listGuesses(input?: string): Promise<GuessAnswer[]> {
     throw new UnauthorizedError();
   }
   const today = await touchTodayArtist(date);
-  const guessess = await findGuessedEntitiesForDay(date, session.user?.email);
-  return guessess.map((x) => compareEntities(today.entity, x));
+  const guesses = await findGuessedEntitiesForDay(date, session.user?.email);
+  return guesses.map((x) => compareEntities(today.entity, x));
 }

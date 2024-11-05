@@ -14,21 +14,20 @@ const searchArtist = async (input: string): Promise<ArtistSearchResult[]> => {
   if (!email) {
     throw new UnauthorizedError();
   }
+  let condition = or(
+    isNull(userGuess.id),
+    ne(dailyEntity.day, getCurrentDate()),
+  );
+
   if (input.length < 3) {
-    return db
-      .select({ id: entity.id, name: entity.name })
-      .from(entity)
-      .orderBy(asc(entity.name))
-      .leftJoin(userGuess, eq(userGuess.entityId, entity.id))
-      .leftJoin(dailyEntity, eq(dailyEntity.id, userGuess.dailyEntityId))
-      .where(or(isNull(userGuess.id), ne(dailyEntity.day, getCurrentDate())))
-      .limit(20);
+    condition = and(condition, like(entity.name, `%${input}%`));
   }
   return db
     .select({ id: entity.id, name: entity.name })
     .from(entity)
     .leftJoin(userGuess, eq(userGuess.entityId, entity.id))
-    .where(and(isNull(userGuess.id), like(entity.name, `%${input}%`)))
+    .leftJoin(dailyEntity, eq(dailyEntity.id, userGuess.dailyEntityId))
+    .where(condition)
     .orderBy(asc(entity.name))
     .limit(20);
 };

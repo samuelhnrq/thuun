@@ -20,6 +20,7 @@ function toPropWithValue(entry: JoinedResult): PropWithValue {
 function collapseResults([head, ...rest]: JoinedResult[]): EntityWithProps {
   const initial: EntityWithProps = {
     ...head.entity,
+    guessedAt: head.guessedAt,
     props: [toPropWithValue(head)],
   };
   return Arr.reduce(rest, initial, (acc, next) => {
@@ -32,10 +33,11 @@ export function aggregateEntityProps(
   entries: JoinedResult[],
 ): EntityWithProps[] {
   return pipe(
-    Arr.groupBy(entries, (x) => x.entity.id.toString()),
+    entries,
+    Arr.groupBy((x) => x.entity.id.toString()),
     Object.values,
     Arr.map(collapseResults),
-    Arr.sortWith((x) => x.createdAt, Order.Date),
+    Arr.sortWith((x) => x.guessedAt, Order.reverse(Order.Date)),
   );
 }
 

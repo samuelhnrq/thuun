@@ -17,7 +17,12 @@ export async function findGuessedEntitiesForDay(
   email: string,
 ): Promise<EntityWithProps[]> {
   const guesses = await db
-    .select({ entity, entityPropValue: propValue, entityProp })
+    .select({
+      entity,
+      entityPropValue: propValue,
+      entityProp,
+      guessedAt: userGuess.createdAt,
+    })
     .from(userGuess)
     .innerJoin(dailyEntity, eq(dailyEntity.id, userGuess.dailyEntityId))
     .innerJoin(entity, eq(entity.id, userGuess.entityId))
@@ -40,7 +45,13 @@ export async function findDailyEntryForDay(
     return cached;
   }
   const entries = await db
-    .select({ dailyEntity, entity, entityPropValue: propValue, entityProp })
+    .select({
+      dailyEntity,
+      entity,
+      entityPropValue: propValue,
+      entityProp,
+      guessedAt: entity.createdAt,
+    })
     .from(dailyEntity)
     .innerJoin(entity, eq(dailyEntity.entityId, entity.id))
     .innerJoin(propValue, eq(entity.id, propValue.entityId))

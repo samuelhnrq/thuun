@@ -4,6 +4,7 @@ import type {
   entity,
   entityProp,
   entityPropValue,
+  userGuess,
 } from "~/server/db/schema";
 
 export interface GuessesState {
@@ -17,11 +18,13 @@ export type Entity = typeof entity.$inferSelect;
 export type DailyEntry = typeof dailyEntity.$inferSelect;
 export type EntityProp = typeof entityProp.$inferSelect;
 export type EntityPropValue = typeof entityPropValue.$inferSelect;
+export type UserGuess = typeof userGuess.$inferSelect;
 
 export interface JoinedResult {
   entity: Entity;
   entityPropValue: EntityPropValue;
   entityProp: EntityProp;
+  guessedAt: Date;
 }
 
 export interface PropWithValue extends EntityProp {
@@ -30,6 +33,7 @@ export interface PropWithValue extends EntityProp {
 
 export interface EntityWithProps extends Entity {
   props: PropWithValue[];
+  guessedAt: Date;
 }
 
 export interface DailyEntryWithEntity extends DailyEntry {
