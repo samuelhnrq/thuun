@@ -1,10 +1,10 @@
+import { existsSync } from "node:fs";
+import { unlink } from "node:fs/promises";
 import { createClient } from "@libsql/client";
+import { $ } from "bun";
 import { drizzle } from "drizzle-orm/libsql";
 import { entity, entityProp, entityPropValue } from "../src/server/db/schema";
 import { logger } from "../src/server/logger";
-import { $ } from "bun";
-import { unlink } from "node:fs/promises";
-import { existsSync } from "node:fs";
 
 const dbUrl = process.env.TURSO_DATABASE_URL;
 

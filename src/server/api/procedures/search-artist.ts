@@ -1,12 +1,12 @@
 "use server";
 
 import { and, asc, eq, isNull, like, ne, or } from "drizzle-orm";
+import { UnauthorizedError } from "~/lib/errors";
 import type { ArtistSearchResult } from "~/lib/models";
 import { getSession } from "~/server/auth";
 import { db } from "~/server/db/client";
-import { game, entity, userGuess } from "~/server/db/schema";
-import { UnauthorizedError } from "~/lib/errors";
 import { getGameForKey } from "~/server/db/entity-repository";
+import { entity, game, userGuess } from "~/server/db/schema";
 
 const searchArtist = async (
   q: string,

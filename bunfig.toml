@@ -1,2 +1,5 @@
 [test]
 preload = ["./drizzle/seed.ts"]
+
+[run]
+bun = true

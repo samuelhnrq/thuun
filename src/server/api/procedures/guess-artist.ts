@@ -1,7 +1,7 @@
 "use server";
 
 import { LibsqlError } from "@libsql/client";
-import { and, count, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { ConflictError, ThuunError } from "~/lib/errors";
 import { getSession } from "~/server/auth";
 import { db } from "~/server/db/client";
@@ -16,16 +16,15 @@ export async function guessArtist(
   const session = await getSession();
   const currentGame = await getGameForKey(gameKey);
   try {
-    const [{ found = 0 } = {}] = await db
-      .select({ found: count() })
-      .from(userGuess)
-      .where(
-        and(
-          eq(userGuess.gameId, currentGame.id),
-          eq(userGuess.userId, session.user?.email || ""),
-          eq(userGuess.entityId, currentGame.answerId),
-        ),
-      );
+    // TODO: Move this to repository so it can be locked/cache/busted
+    const found = await db.$count(
+      userGuess,
+      and(
+        eq(userGuess.gameId, currentGame.id),
+        eq(userGuess.userId, session.user?.email || ""),
+        eq(userGuess.entityId, currentGame.answerId),
+      ),
+    );
     if (found > 0) {
       logger.warn("answer already found");
       throw new ConflictError("Response already found for today");

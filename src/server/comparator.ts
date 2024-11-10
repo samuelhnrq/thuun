@@ -7,8 +7,8 @@ import type {
   PropComparison,
   PropWithValue,
 } from "~/lib/models";
-import type { EntityPropKind } from "./db/schema";
 import { ThuunError } from "../lib/errors";
+import type { EntityPropKind } from "./db/schema";
 
 function toPropWithValue(entry: JoinedResult): PropWithValue {
   return {
@@ -103,7 +103,7 @@ function compareCategoricalProp(
   return {
     propId: guess.id,
     value: guess.value,
-    kind: "CATEGORICAL",
+    kind: guess.propKind,
     correct: false,
     name: guess.name,
   };

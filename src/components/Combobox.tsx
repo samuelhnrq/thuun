@@ -34,6 +34,7 @@ function AppCombobox<T>(outProps: Props<T>) {
         { "brightness-75": outProps.disabled },
       )}
       disabled={outProps.disabled}
+      onInputChange={outProps.onInputChange}
       multiple={false}
       {...outProps}
     >

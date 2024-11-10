@@ -14,7 +14,7 @@ function CountryFlag({ countryCode }: { countryCode: string }) {
     return <div>Invalid country code</div>;
   }
   const flag = String.fromCodePoint(A_LETTER + first, A_LETTER + second);
-  return <div>{flag}</div>;
+  return <span>{flag}</span>;
 }
 
 export { CountryFlag };

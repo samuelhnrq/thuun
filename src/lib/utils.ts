@@ -1,6 +1,5 @@
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { logger } from "~/server/logger";
 
 export function getCurrentDate(input?: string): Dayjs {
   let base = dayjs();
@@ -10,9 +9,7 @@ export function getCurrentDate(input?: string): Dayjs {
       if (parsed.isValid()) {
         base = parsed;
       }
-    } catch (err) {
-      logger.error("failed to parse date", input, err);
-    }
+    } catch {}
   }
   return base.utc().startOf("day");
 }

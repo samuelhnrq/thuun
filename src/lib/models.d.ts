@@ -1,9 +1,9 @@
 import type {
   EntityPropKind,
-  game,
   entity,
   entityProp,
   entityPropValue,
+  game,
   userGuess,
 } from "~/server/db/schema";
 

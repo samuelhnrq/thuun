@@ -1,34 +1,37 @@
 import { createMutation, useQueryClient } from "@tanstack/solid-query";
 import {
-  debounceTime,
-  shareReplay,
-  switchMap,
+  Subject,
   combineLatestWith,
-  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
 } from "rxjs";
 import { Show, createSignal, from } from "solid-js";
 import type { ArtistSearchResult } from "~/lib/models";
+import { gameKey$, globalState$ } from "~/lib/state";
 import { useListGuesses } from "~/lib/use-list-guesses";
 import { guessArtist } from "~/server/api/procedures/guess-artist";
 import { searchArtist } from "~/server/api/procedures/search-artist";
 import { Combobox } from "./Combobox";
 import { Loading } from "./Loading";
-import { gameKey$, globalState$ } from "~/lib/state";
 
-const textInput = new BehaviorSubject<string>("");
+const textInput = new Subject<string>();
 
-const textInput$ = textInput.pipe(
+const artistList$ = textInput.pipe(
   debounceTime(500),
+  distinctUntilChanged(),
   combineLatestWith(globalState$),
   switchMap(([searched, state]) => searchArtist(searched, state.gameKey)),
-  shareReplay(1),
 );
 
 function ArtistSelector() {
   const [artist, setArtist] = createSignal<ArtistSearchResult | null>(null);
   const [disabled, setDisabled] = createSignal(false);
+  const [text, setText] = createSignal("");
   const client = useQueryClient();
   const guessList = useListGuesses();
+  const answerFound = () => guessList.data?.find((x) => x.correct);
+  const options = from(artistList$);
   const getGameKey = from(gameKey$);
   const mutation = createMutation(() => ({
     mutationKey: ["guesses", "new"],
@@ -51,9 +54,6 @@ function ArtistSelector() {
       });
     },
   }));
-  const answerFound = () => guessList.data?.find((x) => x.correct);
-  const [text, setText] = createSignal("");
-  const options = from(textInput$);
   return (
     <>
       <Combobox
