@@ -3,17 +3,20 @@
 import type { GuessAnswer } from "~/lib/models";
 import { getSession } from "~/server/auth";
 import { compareEntities } from "~/server/comparator";
-import { getCurrentDate, touchTodayArtist } from "~/server/daily-picker";
-import { findGuessedEntitiesForDay } from "~/server/db/entity-repository";
-import { UnauthorizedError } from "~/server/lib/errors";
+import { touchTodayGame } from "~/server/daily-picker";
+import {
+  findAlreadyGuessed,
+  getGameForKey,
+} from "~/server/db/entity-repository";
+import { UnauthorizedError } from "~/lib/errors";
 
-export async function listGuesses(input?: string): Promise<GuessAnswer[]> {
+export async function listGuesses(gameKey: string): Promise<GuessAnswer[]> {
   const session = await getSession();
-  const date = getCurrentDate(input);
   if (!session?.user?.email) {
     throw new UnauthorizedError();
   }
-  const today = await touchTodayArtist(date);
-  const guesses = await findGuessedEntitiesForDay(date, session.user?.email);
-  return guesses.map((x) => compareEntities(today.entity, x));
+  const game = await getGameForKey(gameKey);
+  const today = await touchTodayGame();
+  const guesses = await findAlreadyGuessed(game.gameKey, session.user?.email);
+  return guesses.map((x) => compareEntities(today.answer, x));
 }

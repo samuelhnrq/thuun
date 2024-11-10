@@ -1,15 +1,17 @@
 import GoogleProvider from "@auth/core/providers/google";
 import {
+  type Session,
   SolidAuth,
   type SolidAuthConfig,
   getSession as innerGetSession,
 } from "@auth/solid-start";
 import { getRequestEvent } from "solid-js/web";
-import { UnauthorizedError } from "./lib/errors";
+import { UnauthorizedError } from "../lib/errors";
 
 const config: SolidAuthConfig = {
   basePath: "/api/auth",
   secret: process.env.AUTH_SECRET,
+  jwt: { maxAge: 24 * 60 * 60 },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -17,6 +19,10 @@ const config: SolidAuthConfig = {
     }),
   ],
 };
+
+export interface ThuunSession extends Session {
+  expires: string;
+}
 
 export const auth = SolidAuth(config);
 

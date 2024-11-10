@@ -1,17 +1,10 @@
-import { ErrorBoundary } from "solid-js";
-import ArtistSelector from "~/components/ArtistSelector";
-import { GuessList } from "~/components/GuessList";
+import { A } from "@solidjs/router";
+import dayjs from "dayjs";
 import { Navbar } from "~/components/Navbar";
 import { cn } from "~/lib/cn";
 
-function ErrorHandler(err: Error) {
-  if (err.message === "No session") {
-    return <div>You are not logged in</div>;
-  }
-  return <div>Something went wrong: {err.message}</div>;
-}
-
 export default function Home() {
+  // const load = action(async (data: FormData) => {});
   return (
     <main class={cn("flex flex-col bg-bg text-text h-screen items-center")}>
       <Navbar />
@@ -21,10 +14,7 @@ export default function Home() {
           "basis-[60vw] flex-grow min-w-[60vw]",
         )}
       >
-        <ErrorBoundary fallback={ErrorHandler}>
-          <ArtistSelector />
-          <GuessList />
-        </ErrorBoundary>
+        <A href={`/game/${dayjs().startOf("day").toISOString()}`}>Go to Game</A>
       </div>
     </main>
   );

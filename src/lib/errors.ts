@@ -1,5 +1,7 @@
 export class ThuunError extends Error {}
 
+export class BadStateError extends Error {}
+
 export class UnauthorizedError extends ThuunError {}
 
 export class NotFoundError extends ThuunError {}

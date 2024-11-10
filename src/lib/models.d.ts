@@ -1,6 +1,6 @@
 import type {
   EntityPropKind,
-  dailyEntity,
+  game,
   entity,
   entityProp,
   entityPropValue,
@@ -15,7 +15,7 @@ export interface GuessesState {
 }
 
 export type Entity = typeof entity.$inferSelect;
-export type DailyEntry = typeof dailyEntity.$inferSelect;
+export type Game = typeof game.$inferSelect;
 export type EntityProp = typeof entityProp.$inferSelect;
 export type EntityPropValue = typeof entityPropValue.$inferSelect;
 export type UserGuess = typeof userGuess.$inferSelect;
@@ -36,8 +36,8 @@ export interface EntityWithProps extends Entity {
   guessedAt: Date;
 }
 
-export interface DailyEntryWithEntity extends DailyEntry {
-  entity: EntityWithProps;
+export interface GameWithAnswer extends Game {
+  answer: EntityWithProps;
 }
 
 export interface NumericalPropComparison extends PropComparison {

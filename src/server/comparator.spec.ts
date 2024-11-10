@@ -19,6 +19,7 @@ function baseArtist(name: string): EntityWithProps {
     name,
     entityKind: "ARTIST" as const,
     externalId: "music-artist-1",
+    guessedAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
     props: [
@@ -103,6 +104,7 @@ function simulateJoinedResult(
       value: "1",
     },
     entityProp: prop,
+    guessedAt: new Date(),
   };
 }
 

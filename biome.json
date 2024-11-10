@@ -36,7 +36,8 @@
       "src/**/*.css",
       "tailwind.config.ts",
       "drizzle.config.ts",
-      "app.config.ts"
+      "app.config.ts",
+      "drizzle/*.ts"
     ],
     "ignore": ["node_modules", ".output", ".vinxi"]
   }

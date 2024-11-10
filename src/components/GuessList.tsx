@@ -1,7 +1,8 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { cn } from "~/lib/cn";
 import type { GuessAnswer, PropComparison } from "~/lib/models";
 import { useListGuesses } from "~/lib/use-list-guesses";
+import { CountryFlag } from "./CountryFlag";
 
 function colorClassCorrect(correct: boolean) {
   return {
@@ -25,7 +26,12 @@ function Comparision(comparision: PropComparison) {
           "text-2xl text-ellipsis overflow-hidden whitespace-nowrap",
         )}
       >
-        {comparision.value}
+        <Show
+          when={comparision.kind === "GEOGRAPHICAL"}
+          fallback={comparision.value}
+        >
+          <CountryFlag countryCode={comparision.value} />
+        </Show>
       </p>
     </div>
   );

@@ -1,29 +1,41 @@
 import { createMutation, useQueryClient } from "@tanstack/solid-query";
-import { Subject, debounceTime, shareReplay, switchMap } from "rxjs";
-import { Show, createMemo, createSignal, from, onMount } from "solid-js";
+import {
+  debounceTime,
+  shareReplay,
+  switchMap,
+  combineLatestWith,
+  BehaviorSubject,
+} from "rxjs";
+import { Show, createSignal, from } from "solid-js";
 import type { ArtistSearchResult } from "~/lib/models";
 import { useListGuesses } from "~/lib/use-list-guesses";
 import { guessArtist } from "~/server/api/procedures/guess-artist";
 import { searchArtist } from "~/server/api/procedures/search-artist";
 import { Combobox } from "./Combobox";
 import { Loading } from "./Loading";
+import { gameKey$, globalState$ } from "~/lib/state";
 
-const textInput = new Subject<string>();
-const textInput$ = textInput.asObservable().pipe(
+const textInput = new BehaviorSubject<string>("");
+
+const textInput$ = textInput.pipe(
   debounceTime(500),
-  switchMap((searched) => searchArtist(searched)),
+  combineLatestWith(globalState$),
+  switchMap(([searched, state]) => searchArtist(searched, state.gameKey)),
   shareReplay(1),
 );
 
-export default function ArtistSelector() {
+function ArtistSelector() {
   const [artist, setArtist] = createSignal<ArtistSearchResult | null>(null);
   const [disabled, setDisabled] = createSignal(false);
   const client = useQueryClient();
   const guessList = useListGuesses();
+  const getGameKey = from(gameKey$);
   const mutation = createMutation(() => ({
     mutationKey: ["guesses", "new"],
     mutationFn: async (value: ArtistSearchResult) => {
-      await guessArtist(value.id);
+      const gameKey = getGameKey();
+      if (!gameKey) return;
+      await guessArtist(value.id, gameKey);
     },
     onMutate(value) {
       setArtist(value);
@@ -39,8 +51,7 @@ export default function ArtistSelector() {
       });
     },
   }));
-  const answerFound = createMemo(() => guessList.data?.find((x) => x.correct));
-  onMount(() => textInput.next(""));
+  const answerFound = () => guessList.data?.find((x) => x.correct);
   const [text, setText] = createSignal("");
   const options = from(textInput$);
   return (
@@ -79,3 +90,5 @@ export default function ArtistSelector() {
     </>
   );
 }
+
+export { ArtistSelector };

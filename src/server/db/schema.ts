@@ -43,10 +43,10 @@ export const entityPropValue = sqliteTable("entity_prop_value", {
   value: text("value").notNull(),
 });
 
-export const dailyEntity = sqliteTable("daily_entity", {
+export const game = sqliteTable("game", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  day: integer("day", { mode: "timestamp" }).unique().notNull(),
-  entityId: integer("entity_id")
+  gameKey: text("game_key").unique().notNull(),
+  answerId: integer("entity_id")
     .notNull()
     .references(() => entity.id, { onDelete: "cascade" }),
 });
@@ -59,14 +59,14 @@ export const userGuess = sqliteTable(
     entityId: integer("entity_id")
       .notNull()
       .references(() => entity.id),
-    dailyEntityId: integer("daily_entity_id")
+    gameId: integer("game_id")
       .notNull()
-      .references(() => dailyEntity.id, { onDelete: "cascade" }),
+      .references(() => game.id, { onDelete: "cascade" }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(UNIXEPOCH())`),
   },
   (table) => ({
-    dailyGuess: unique().on(table.dailyEntityId, table.entityId, table.userId),
+    dailyGuess: unique().on(table.gameId, table.entityId, table.userId),
   }),
 );

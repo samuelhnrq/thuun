@@ -8,7 +8,7 @@ import type {
   PropWithValue,
 } from "~/lib/models";
 import type { EntityPropKind } from "./db/schema";
-import { ThuunError } from "./lib/errors";
+import { ThuunError } from "../lib/errors";
 
 function toPropWithValue(entry: JoinedResult): PropWithValue {
   return {

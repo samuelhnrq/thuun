@@ -6,7 +6,7 @@ export default defineConfig({
   casing: "snake_case",
   dialect: "turso",
   dbCredentials: {
-    url: process.env.TURSO_DATABASE_URL || "http://localhost:8080",
+    url: process.env.TURSO_DATABASE_URL || ":memory:",
     authToken: process.env.TURSO_AUTH_TOKEN,
   },
   migrations: {

@@ -5,8 +5,11 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { ErrorBoundary, Suspense } from "solid-js";
-import { SessionProvider } from "~/lib/session";
+
+dayjs.extend(utc);
 
 function createQueryClient() {
   if (typeof window !== "undefined") {
@@ -23,14 +26,12 @@ export default function App() {
       root={(props) => (
         <MetaProvider>
           <Title>SolidStart - Basic</Title>
-          <Suspense fallback={"Loading..."}>
+          <QueryClientProvider client={createQueryClient()}>
             <ErrorBoundary fallback={<div>Something went wrong</div>}>
-              <QueryClientProvider client={createQueryClient()}>
-                <SessionProvider>{props.children}</SessionProvider>
-                <SolidQueryDevtools initialIsOpen={false} />
-              </QueryClientProvider>
+              <Suspense fallback={"Loading..."}>{props.children}</Suspense>
             </ErrorBoundary>
-          </Suspense>
+            <SolidQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
         </MetaProvider>
       )}
     >

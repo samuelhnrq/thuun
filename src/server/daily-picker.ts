@@ -1,24 +1,11 @@
-import dayjs from "dayjs";
 import { count, eq } from "drizzle-orm";
-import type { DailyEntryWithEntity, Entity } from "~/lib/models";
-import { findDailyEntryForDay } from "~/server/db/entity-repository";
+import type { GameWithAnswer, Entity } from "~/lib/models";
+import { findGameForKey } from "~/server/db/entity-repository";
 import { db } from "./db/client";
-import { dailyEntity, entity } from "./db/schema";
-import { BadRequestError, NotFoundError } from "./lib/errors";
+import { game, entity } from "./db/schema";
+import { NotFoundError } from "../lib/errors";
 import { logger } from "./logger";
-
-export function getCurrentDate(input?: string): Date {
-  let base = dayjs();
-  if (input) {
-    try {
-      base = dayjs(input);
-    } catch (err) {
-      logger.error("failed to parse date", input, err);
-      throw new BadRequestError();
-    }
-  }
-  return base.startOf("day").toDate();
-}
+import { getCurrentDate } from "~/lib/utils";
 
 // Move this to repository maybe?
 async function createDailyEntry(): Promise<void> {
@@ -44,9 +31,9 @@ async function createDailyEntry(): Promise<void> {
   }
   logger.info("Picked", randomArtist.name);
   const day = getCurrentDate();
-  await db.insert(dailyEntity).values({
-    day,
-    entityId: randomArtist.id,
+  await db.insert(game).values({
+    gameKey: day.toISOString(),
+    answerId: randomArtist.id,
   });
 }
 
@@ -57,16 +44,14 @@ async function createDailyEntry(): Promise<void> {
  * @param inDate date to get the artist for, if not provided, today is used
  * @returns the artist for the given date
  */
-export async function touchTodayArtist(
-  inDate?: Date,
-): Promise<DailyEntryWithEntity> {
-  const date = inDate ?? getCurrentDate();
-  const today = await findDailyEntryForDay(date);
+export async function touchTodayGame(): Promise<GameWithAnswer> {
+  const date = getCurrentDate().toISOString();
+  const today = await findGameForKey(date);
   if (today) {
     return today;
   }
   await createDailyEntry();
-  const newToday = await findDailyEntryForDay(date);
+  const newToday = await findGameForKey(date);
   if (!newToday) {
     throw new NotFoundError();
   }

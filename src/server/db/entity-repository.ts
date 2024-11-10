@@ -1,20 +1,29 @@
 import { and, eq } from "drizzle-orm";
-import type { DailyEntryWithEntity, EntityWithProps } from "../../lib/models";
+import { LRUCache } from "lru-cache";
+import type { GameWithAnswer, EntityWithProps } from "~/lib/models";
 import { aggregateEntityProps } from "../comparator";
-import { ConflictError, NotFoundError } from "../lib/errors";
+import { ConflictError, NotFoundError } from "../../lib/errors";
 import { logger } from "../logger";
 import { db } from "./client";
 import {
-  dailyEntity,
   entity,
   entityProp,
+  game,
   entityPropValue as propValue,
   userGuess,
 } from "./schema";
+import Locker from "async-lock";
 
-export async function findGuessedEntitiesForDay(
-  date: Date,
-  email: string,
+const dailyArtistCache = new LRUCache<string, GameWithAnswer>({
+  max: 1000,
+  ttl: 24 * 60 * 60 * 1000,
+  updateAgeOnGet: true,
+});
+const locker = new Locker();
+
+export async function findAlreadyGuessed(
+  gameKey: string,
+  userEmail: string,
 ): Promise<EntityWithProps[]> {
   const guesses = await db
     .select({
@@ -24,52 +33,64 @@ export async function findGuessedEntitiesForDay(
       guessedAt: userGuess.createdAt,
     })
     .from(userGuess)
-    .innerJoin(dailyEntity, eq(dailyEntity.id, userGuess.dailyEntityId))
+    .innerJoin(game, eq(game.id, userGuess.gameId))
     .innerJoin(entity, eq(entity.id, userGuess.entityId))
     .innerJoin(propValue, eq(propValue.entityId, entity.id))
     .innerJoin(entityProp, eq(entityProp.id, propValue.propId))
-    .where(and(eq(dailyEntity.day, date), eq(userGuess.userId, email)))
+    .where(and(eq(game.gameKey, gameKey), eq(userGuess.userId, userEmail)))
     .orderBy(userGuess.createdAt);
   return aggregateEntityProps(guesses);
 }
 
-const dailyArtistCache = new Map<string, DailyEntryWithEntity>();
+export async function getGameForKey(gameKey: string): Promise<GameWithAnswer> {
+  const game = await findGameForKey(gameKey);
+  if (!game) {
+    throw new NotFoundError("Game not found");
+  }
+  return game;
+}
 
-export async function findDailyEntryForDay(
-  date: Date,
-): Promise<DailyEntryWithEntity | null> {
-  const cacheKey = date.toISOString();
-  const cached = dailyArtistCache.get(cacheKey);
+export async function findGameForKey(
+  gameKey: string,
+): Promise<GameWithAnswer | null> {
+  return locker.acquire(gameKey, () => syncedFindGameForKey(gameKey));
+}
+
+async function syncedFindGameForKey(
+  gameKey: string,
+): Promise<GameWithAnswer | null> {
+  logger.info("lock acquired");
+  const cached = dailyArtistCache.get(gameKey);
   if (cached) {
-    logger.debug("Found cached artist for %s", cacheKey);
+    logger.debug("Found cached game for key '%s'", gameKey);
     return cached;
   }
+  logger.debug("Game cache miss for key '%s'", gameKey);
   const entries = await db
     .select({
-      dailyEntity,
+      game,
       entity,
       entityPropValue: propValue,
       entityProp,
       guessedAt: entity.createdAt,
     })
-    .from(dailyEntity)
-    .innerJoin(entity, eq(dailyEntity.entityId, entity.id))
+    .from(game)
+    .innerJoin(entity, eq(game.answerId, entity.id))
     .innerJoin(propValue, eq(entity.id, propValue.entityId))
     .innerJoin(entityProp, eq(entityProp.id, propValue.propId))
-    .where(eq(dailyEntity.day, date));
+    .where(eq(game.gameKey, gameKey));
   if (entries.length === 0) {
     return null;
   }
   const aggregated = aggregateEntityProps(entries);
-
   if (aggregated.length === 0) {
-    throw new NotFoundError("No entities found");
+    throw new NotFoundError("Game with no answer");
   }
   if (aggregated.length > 1) {
-    throw new ConflictError("More than one entity found");
+    throw new ConflictError("Game with multiple answers");
   }
-  logger.info("Fetched artist of the day", aggregated[0].name);
-  const entry = { ...entries[0].dailyEntity, entity: aggregated[0] };
-  dailyArtistCache.set(cacheKey, entry);
+  logger.info("Fetched game for key '%s', caching", gameKey);
+  const entry = { ...entries[0].game, answer: aggregated[0] };
+  dailyArtistCache.set(gameKey, entry);
   return entry;
 }
