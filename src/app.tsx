@@ -3,20 +3,34 @@ import "./app.css";
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  type QueryClientConfig,
+} from "@tanstack/solid-query";
 import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { ErrorBoundary, type ParentProps, Suspense } from "solid-js";
+import { ErrorBoundary, Suspense, type ParentProps } from "solid-js";
 
 dayjs.extend(utc);
 
 function createQueryClient() {
+  const config: QueryClientConfig = {
+    defaultOptions: {
+      queries: { experimental_prefetchInRender: true },
+    },
+  };
   if (typeof window !== "undefined") {
-    window.queryClient ??= new QueryClient({});
+    window.queryClient ??= new QueryClient(config);
     return window.queryClient;
   }
-  return new QueryClient({});
+  return new QueryClient(config);
+}
+
+function GlobalErrorHandler(err: Error) {
+  console.error("global bad", err);
+  return "Something went wrong";
 }
 
 function Root(props: ParentProps) {
@@ -24,8 +38,8 @@ function Root(props: ParentProps) {
     <MetaProvider>
       <Title>SolidStart - Basic</Title>
       <QueryClientProvider client={createQueryClient()}>
-        <ErrorBoundary fallback={<div>Something went wrong</div>}>
-          <Suspense fallback={"Loading..."}>{props.children}</Suspense>
+        <ErrorBoundary fallback={GlobalErrorHandler}>
+          <Suspense fallback="Loading route">{props.children}</Suspense>
         </ErrorBoundary>
         <SolidQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
@@ -35,7 +49,7 @@ function Root(props: ParentProps) {
 
 export default function App() {
   return (
-    <Router preload={true} root={Root}>
+    <Router preload root={Root}>
       <FileRoutes />
     </Router>
   );

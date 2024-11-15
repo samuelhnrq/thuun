@@ -1,6 +1,4 @@
-import dayjs from "dayjs";
 import { BehaviorSubject, distinctUntilChanged, filter, map } from "rxjs";
-import { BadStateError } from "~/lib/errors";
 import { getCurrentDate } from "./utils";
 
 interface GlobalState {
@@ -25,10 +23,6 @@ function updateState(cb: (oldState: GlobalState) => GlobalState) {
 }
 
 export function dispatchGameKey(gameKey: string) {
-  const isDate = dayjs(gameKey);
-  if (isDate) {
-    throw new BadStateError("Game key cannot be a date");
-  }
   updateState((state) => ({ ...state, gameKey }));
 }
 

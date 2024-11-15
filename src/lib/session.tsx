@@ -5,7 +5,6 @@ import { findSession } from "~/server/auth";
 export function useSession() {
   const [data, { refetch }] = createResource(() => findSession(), {
     name: "user-session",
-    initialValue: null,
   });
   createEffect((oldId?: ReturnType<typeof setTimeout>) => {
     if (oldId) {

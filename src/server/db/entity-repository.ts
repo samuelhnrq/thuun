@@ -30,6 +30,10 @@ export async function createDailyEntry(): Promise<void> {
 }
 
 async function syncedCreateDailyEntry(today: string): Promise<void> {
+  if (dailyArtistCache.has(today)) {
+    logger.info("entity in cache, must exist");
+    return;
+  }
   const existingGame = await db.$count(game, eq(game.gameKey, today));
   if (existingGame > 0) {
     logger.info("Game already exists for today");
@@ -56,6 +60,7 @@ async function syncedCreateDailyEntry(today: string): Promise<void> {
   logger.info("Picked", randomArtist.name);
   await db.insert(game).values({
     gameKey: today,
+    author: "thuun@daily.com",
     answerId: randomArtist.id,
   });
 }

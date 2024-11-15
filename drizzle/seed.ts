@@ -110,7 +110,7 @@ await db.insert(entityPropValue).values([
   { entityId: 8, propId: 6, value: "1" },
   // John Lennon
   { entityId: 9, propId: 1, value: "9" },
-  { entityId: 9, propId: 2, value: "United Kingdom" },
+  { entityId: 9, propId: 2, value: "GB" },
   { entityId: 9, propId: 3, value: "Rock" },
   { entityId: 9, propId: 4, value: "Male" },
   { entityId: 9, propId: 5, value: "1940" },

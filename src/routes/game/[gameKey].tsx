@@ -1,15 +1,19 @@
-import { Suspense } from "solid-js";
-import { ArtistSelector } from "~/components/ArtistSelector";
+import { useParams } from "@solidjs/router";
+import { createEffect } from "solid-js";
+import { EntityGuesser } from "~/components/EntityGuesser";
 import { GuessList } from "~/components/GuessList";
 import { Scaffolding } from "~/components/Scaffolding";
+import { dispatchGameKey } from "~/lib/state";
 
 function GameKey() {
+  const params = useParams();
+  createEffect(() => {
+    dispatchGameKey(params.gameKey);
+  });
   return (
     <Scaffolding>
-      <Suspense>
-        <ArtistSelector />
-        <GuessList />
-      </Suspense>
+      <EntityGuesser />
+      <GuessList />
     </Scaffolding>
   );
 }

@@ -60,7 +60,7 @@ export interface GuessAnswer {
   comparisions: readonly PropComparison[];
 }
 
-export interface ArtistSearchResult {
+export interface EntitySearchResult {
   name: string;
   id: number;
 }

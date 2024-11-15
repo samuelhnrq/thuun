@@ -67,7 +67,7 @@ function GuessedArtist(comparision: GuessAnswer) {
 function GuessList() {
   const res = useListGuesses();
   return (
-    <div class="max-h-[70vh] overflow-y-scroll">
+    <div class="max-h-[70vh] overflow-y-auto">
       <For each={res.data}>{GuessedArtist}</For>
     </div>
   );

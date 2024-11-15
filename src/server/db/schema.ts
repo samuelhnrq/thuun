@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  unique,
+} from "drizzle-orm/sqlite-core";
 
 const entityKinds = ["ARTIST"] as const;
 
@@ -43,13 +49,24 @@ export const entityPropValue = sqliteTable("entity_prop_value", {
   value: text("value").notNull(),
 });
 
-export const game = sqliteTable("game", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  gameKey: text("game_key").unique().notNull(),
-  answerId: integer("entity_id")
-    .notNull()
-    .references(() => entity.id, { onDelete: "cascade" }),
-});
+export const game = sqliteTable(
+  "game",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    gameKey: text("game_key").unique().notNull(),
+    author: text("author").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(UNIXEPOCH())`),
+    answerId: integer("entity_id")
+      .notNull()
+      .references(() => entity.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    authorIndex: index("game_author").on(table.author),
+    aa: index("game_author_created_at").on(table.author, table.createdAt),
+  }),
+);
 
 export const userGuess = sqliteTable(
   "user_guess",
