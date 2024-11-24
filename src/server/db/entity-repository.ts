@@ -1,7 +1,5 @@
-import Locker from "async-lock";
 import { and, eq } from "drizzle-orm";
-import { LRUCache } from "lru-cache";
-import type { Entity, EntityWithProps, GameWithAnswer } from "~/lib/models";
+import type { EntityWithProps, GameWithAnswer } from "~/lib/models";
 import { getCurrentDate } from "~/lib/utils";
 import { ConflictError, NotFoundError } from "../../lib/errors";
 import { aggregateEntityProps } from "../comparator";
@@ -14,79 +12,58 @@ import {
   entityPropValue as propValue,
   userGuess,
 } from "./schema";
+import { CachedResource } from "../synced-cache";
 
-const dailyArtistCache = new LRUCache<string, GameWithAnswer>({
-  max: 1000,
-  ttl: 24 * 60 * 60 * 1000,
-  updateAgeOnGet: true,
-});
-const locker = new Locker();
-
-export async function createDailyEntry(): Promise<void> {
-  const today = getCurrentDate().toISOString();
-  await locker.acquire(today, async () => {
-    await syncedCreateDailyEntry(today);
-  });
-}
-
-async function syncedCreateDailyEntry(today: string): Promise<void> {
-  if (dailyArtistCache.has(today)) {
-    logger.info("entity in cache, must exist");
-    return;
-  }
-  const existingGame = await db.$count(game, eq(game.gameKey, today));
-  if (existingGame > 0) {
-    logger.info("Game already exists for today");
-    return;
-  }
-  const totalEntities = await db.$count(entity);
-  if (totalEntities === 0) {
-    logger.error("Database is empty");
-    throw new NotFoundError();
-  }
-  logger.info("No daily game for %s, running dice", today);
-  let randomArtist: Entity | null = null;
-  while (!randomArtist) {
-    const randomId = Math.floor(Math.random() * totalEntities) + 1;
-    const [nextArtist] = await db
-      .select()
-      .from(entity)
-      .where(eq(entity.id, randomId))
-      .limit(1);
-    if (nextArtist) {
-      randomArtist = nextArtist;
-    }
-  }
-  logger.info("Picked", randomArtist.name);
-  await db.insert(game).values({
-    gameKey: today,
-    author: "thuun@daily.com",
-    answerId: randomArtist.id,
-  });
-}
-
-export async function findAlreadyGuessed(
-  gameKey: string,
-  userEmail: string,
-): Promise<EntityWithProps[]> {
-  return locker.acquire(gameKey, async () => {
-    const guesses = await db
+class CachedGame extends CachedResource<GameWithAnswer> {
+  async cacheValueMiss(gameKey: string): Promise<GameWithAnswer | null> {
+    const entries = await db
       .select({
+        game,
         entity,
         entityPropValue: propValue,
         entityProp,
-        guessedAt: userGuess.createdAt,
+        guessedAt: entity.createdAt,
       })
-      .from(userGuess)
-      .innerJoin(game, eq(game.id, userGuess.gameId))
-      .innerJoin(entity, eq(entity.id, userGuess.entityId))
-      .innerJoin(propValue, eq(propValue.entityId, entity.id))
+      .from(game)
+      .innerJoin(entity, eq(game.answerId, entity.id))
+      .innerJoin(propValue, eq(entity.id, propValue.entityId))
       .innerJoin(entityProp, eq(entityProp.id, propValue.propId))
-      .where(and(eq(game.gameKey, gameKey), eq(userGuess.userId, userEmail)))
-      .orderBy(userGuess.createdAt);
-    return aggregateEntityProps(guesses);
-  });
+      .where(eq(game.gameKey, gameKey));
+    if (entries.length === 0) {
+      return null;
+    }
+    const aggregated = aggregateEntityProps(entries);
+    if (aggregated.length === 0) {
+      throw new NotFoundError("Game with no answer");
+    }
+    if (aggregated.length > 1) {
+      throw new ConflictError("Game with multiple answers");
+    }
+    const entry = { ...entries[0].game, answer: aggregated[0] };
+    return entry;
+  }
+
+  async createEntry(
+    gameKey: string,
+    getAnswer: () => Promise<number> | number,
+    author = "thuun@daily.com",
+  ): Promise<void> {
+    this.locker.acquire(gameKey, async () => {
+      logger.debug("lock acquired for %s", gameKey);
+      logger.info("generating answer for %s", gameKey);
+      const answer = await getAnswer();
+      logger.info("Creating game %s with answer %s", gameKey, answer);
+      await db.insert(game).values({
+        gameKey: gameKey,
+        author: author,
+        answerId: answer,
+      });
+      logger.info("Created game for %s", gameKey);
+      this.dailyArtistCache.delete(gameKey);
+    });
+  }
 }
+export const dailyArtistCache = new CachedGame();
 
 export async function getGameForKey(gameKey: string): Promise<GameWithAnswer> {
   const game = await findGameForKey(gameKey);
@@ -99,44 +76,61 @@ export async function getGameForKey(gameKey: string): Promise<GameWithAnswer> {
 export async function findGameForKey(
   gameKey: string,
 ): Promise<GameWithAnswer | null> {
-  return locker.acquire(gameKey, () => syncedFindGameForKey(gameKey));
+  return dailyArtistCache.get(gameKey);
 }
 
-async function syncedFindGameForKey(
-  gameKey: string,
-): Promise<GameWithAnswer | null> {
-  logger.info("lock acquired");
-  const cached = dailyArtistCache.get(gameKey);
-  if (cached) {
-    logger.debug("Found cached game for key '%s'", gameKey);
-    return cached;
+export async function createDailyEntry(): Promise<void> {
+  const today = getCurrentDate().toISOString();
+  if (await dailyArtistCache.has(today)) {
+    logger.debug("entity in cache, must exist");
+    return;
   }
-  logger.debug("Game cache miss for key '%s'", gameKey);
-  const entries = await db
+  const existingGame = await db.$count(game, eq(game.gameKey, today));
+  if (existingGame > 0) {
+    logger.debug("Game already exists for today, warming cache");
+    await dailyArtistCache.get(today);
+    return;
+  }
+  const totalEntities = await db.$count(entity);
+  if (totalEntities === 0) {
+    logger.error("Database is empty");
+    throw new NotFoundError();
+  }
+  const randomArtistPicker = async () => {
+    logger.info("No daily game for %s, running dice", today);
+    while (true) {
+      const randomId = Math.floor(Math.random() * totalEntities) + 1;
+      const [artist] = await db
+        .select()
+        .from(entity)
+        .where(eq(entity.id, randomId))
+        .limit(1);
+      if (artist) {
+        logger.info("Picked", artist.name);
+        return artist.id;
+      }
+    }
+  };
+  await dailyArtistCache.createEntry(today, randomArtistPicker);
+}
+
+export async function findAlreadyGuessed(
+  gameKey: string,
+  userEmail: string,
+): Promise<EntityWithProps[]> {
+  const guesses = await db
     .select({
-      game,
       entity,
       entityPropValue: propValue,
       entityProp,
-      guessedAt: entity.createdAt,
+      guessedAt: userGuess.createdAt,
     })
-    .from(game)
-    .innerJoin(entity, eq(game.answerId, entity.id))
-    .innerJoin(propValue, eq(entity.id, propValue.entityId))
+    .from(userGuess)
+    .innerJoin(game, eq(game.id, userGuess.gameId))
+    .innerJoin(entity, eq(entity.id, userGuess.entityId))
+    .innerJoin(propValue, eq(propValue.entityId, entity.id))
     .innerJoin(entityProp, eq(entityProp.id, propValue.propId))
-    .where(eq(game.gameKey, gameKey));
-  if (entries.length === 0) {
-    return null;
-  }
-  const aggregated = aggregateEntityProps(entries);
-  if (aggregated.length === 0) {
-    throw new NotFoundError("Game with no answer");
-  }
-  if (aggregated.length > 1) {
-    throw new ConflictError("Game with multiple answers");
-  }
-  logger.info("Fetched game for key '%s', caching", gameKey);
-  const entry = { ...entries[0].game, answer: aggregated[0] };
-  dailyArtistCache.set(gameKey, entry);
-  return entry;
+    .where(and(eq(game.gameKey, gameKey), eq(userGuess.userId, userEmail)))
+    .orderBy(userGuess.createdAt);
+  return aggregateEntityProps(guesses);
 }

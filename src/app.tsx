@@ -12,6 +12,7 @@ import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { ErrorBoundary, Suspense, type ParentProps } from "solid-js";
+import { isServer } from "solid-js/web";
 
 dayjs.extend(utc);
 
@@ -21,11 +22,11 @@ function createQueryClient() {
       queries: { experimental_prefetchInRender: true },
     },
   };
-  if (typeof window !== "undefined") {
-    window.queryClient ??= new QueryClient(config);
-    return window.queryClient;
+  if (isServer) {
+    return new QueryClient(config);
   }
-  return new QueryClient(config);
+  window.queryClient ??= new QueryClient(config);
+  return window.queryClient;
 }
 
 function GlobalErrorHandler(err: Error) {

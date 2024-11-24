@@ -6,7 +6,9 @@ import { ConflictError, ThuunError, UnauthorizedError } from "~/lib/errors";
 import type { Game } from "~/lib/models";
 import { getSession } from "~/server/auth";
 import { db } from "~/server/db/client";
+import { dailyArtistCache } from "~/server/db/entity-repository";
 import { game } from "~/server/db/schema";
+import { logger } from "~/server/logger";
 
 export async function createGame(
   gameKey: string,
@@ -18,6 +20,7 @@ export async function createGame(
     throw new UnauthorizedError();
   }
   try {
+    logger.info("Creating game for %s", gameKey);
     const now = dayjs().utc();
     const ttl = await db.$count(
       game,
@@ -29,16 +32,14 @@ export async function createGame(
     if (ttl > 10) {
       throw new ConflictError("Too many games created today");
     }
-    const newGames = await db
-      .insert(game)
-      .values({
-        gameKey,
-        author: email,
-        answerId,
-      })
-      .returning();
-    return newGames[0];
+    await dailyArtistCache.createEntry(gameKey, () => answerId, email);
+    const created = await dailyArtistCache.get(gameKey);
+    if (!created) {
+      throw new ThuunError("Failed to create game");
+    }
+    return created;
   } catch (err) {
+    logger.error("Failed to create game %s", err);
     if (!(err instanceof ThuunError)) {
       throw new ThuunError("Failed to create game", { cause: err });
     }

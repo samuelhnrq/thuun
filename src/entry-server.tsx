@@ -1,5 +1,14 @@
 // @refresh reload
 import { StartServer, createHandler } from "@solidjs/start/server";
+import { logger } from "./server/logger";
+
+process.on("unhandledRejection", (reason) => {
+  if (reason instanceof Error) {
+    logger.error("Unhandled Rejection", reason.message);
+  } else {
+    logger.error("Unhandled Rejection", reason);
+  }
+});
 
 export default createHandler(() => {
   return (

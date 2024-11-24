@@ -15,7 +15,7 @@
     "allowJs": true,
     "strict": true,
     "noEmit": true,
-    "types": ["vinxi/types/client", "bun-types"],
+    "types": ["vinxi/types/client", "bun-types", "@types/dom-navigation"],
     "isolatedModules": true,
     "paths": {
       "~/*": ["./src/*"]

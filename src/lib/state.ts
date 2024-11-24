@@ -1,34 +1,39 @@
-import { BehaviorSubject, distinctUntilChanged, filter, map } from "rxjs";
-import { getCurrentDate } from "./utils";
+import {
+  concat,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  type Observable,
+  of,
+  shareReplay,
+} from "rxjs";
+import { getRequestEvent, isServer } from "solid-js/web";
 
-interface GlobalState {
-  gameKey: string;
+function currentUrl(): URL {
+  if (!isServer) {
+    return new URL(window.location.href);
+  }
+  return new URL(getRequestEvent()?.request?.url || "");
 }
 
-const globalSubject = new BehaviorSubject<GlobalState>({
-  gameKey: getCurrentDate().toISOString(),
-});
+function routeChange() {
+  if (isServer) {
+    return of(null);
+  }
+  return fromEvent(window.navigation, "navigate");
+}
 
-export const globalState$ = globalSubject.asObservable();
-
-export const gameKey$ = globalState$.pipe(
-  map((state) => state.gameKey),
+export const gameKey$: Observable<string | null> = concat(
+  of(null),
+  routeChange(),
+).pipe(
+  map(() => {
+    const path = currentUrl().pathname;
+    if (path.startsWith("/game/")) {
+      return path.split("/")[2];
+    }
+    return null;
+  }),
   distinctUntilChanged(),
-  filter((x): x is string => !!x),
+  shareReplay(1),
 );
-
-function updateState(cb: (oldState: GlobalState) => GlobalState) {
-  const current = globalSubject.getValue();
-  globalSubject.next(cb(current));
-}
-
-export function dispatchGameKey(gameKey: string) {
-  updateState((state) => ({ ...state, gameKey }));
-}
-
-export function dispatchDailyGame() {
-  updateState((state) => ({
-    ...state,
-    gameKey: getCurrentDate().toISOString(),
-  }));
-}

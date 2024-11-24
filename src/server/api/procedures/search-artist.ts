@@ -1,39 +1,41 @@
 "use server";
 
-import { and, asc, eq, isNull, like, ne, or } from "drizzle-orm";
+import { and, asc, eq, isNull, like, type SQL } from "drizzle-orm";
 import { UnauthorizedError } from "~/lib/errors";
 import type { EntitySearchResult } from "~/lib/models";
 import { getSession } from "~/server/auth";
 import { db } from "~/server/db/client";
-import { getGameForKey } from "~/server/db/entity-repository";
 import { entity, game, userGuess } from "~/server/db/schema";
+import { logger } from "~/server/logger";
 
 const searchArtist = async (
   q: string,
-  gameKey: string,
+  gameKey?: string | null,
 ): Promise<EntitySearchResult[]> => {
   const session = await getSession();
   const email = session.user?.email;
   if (!email) {
     throw new UnauthorizedError();
   }
-  const currentGame = await getGameForKey(gameKey);
-  let condition = or(
-    isNull(userGuess.id),
-    ne(game.gameKey, currentGame.gameKey),
-  );
-
-  if (q.length < 3) {
+  logger.info("searching for artist '%s', in game '%s'", q, gameKey);
+  let condition: SQL<unknown> | undefined = undefined;
+  const base = db
+    .selectDistinct({ id: entity.id, name: entity.name })
+    .from(entity);
+  if (gameKey) {
+    base
+      .innerJoin(game, eq(game.gameKey, gameKey))
+      .leftJoin(
+        userGuess,
+        and(eq(game.id, userGuess.gameId), eq(entity.id, userGuess.entityId)),
+      );
+    condition = isNull(userGuess.id);
+  }
+  if (q.length >= 3) {
     condition = and(condition, like(entity.name, `%${q}%`));
   }
-  return db
-    .select({ id: entity.id, name: entity.name })
-    .from(entity)
-    .leftJoin(userGuess, eq(userGuess.entityId, entity.id))
-    .leftJoin(game, eq(game.id, userGuess.gameId))
-    .where(condition)
-    .orderBy(asc(entity.name))
-    .limit(20);
+  const res = await base.where(condition).orderBy(asc(entity.name)).limit(20);
+  return res;
 };
 
 export { searchArtist };

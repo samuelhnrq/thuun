@@ -14,8 +14,13 @@ export default function Home() {
   const [shown, setShown] = createSignal(false);
   const handler = async (answer: EntitySearchResult) => {
     const key = uuid().split("-")[0];
-    await createGame(key, answer.id);
-    navigte(`/game/${key}`);
+    try {
+      await createGame(key, answer.id);
+      navigte(`/game/${key}`);
+    } catch (err) {
+      console.error("failed to create game", err);
+      return;
+    }
   };
   const navigte = useNavigate();
   return (
