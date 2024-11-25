@@ -1,9 +1,9 @@
 import {
+  type Observable,
   concat,
   distinctUntilChanged,
   fromEvent,
   map,
-  type Observable,
   of,
   shareReplay,
 } from "rxjs";

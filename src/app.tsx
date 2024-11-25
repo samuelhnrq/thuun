@@ -5,13 +5,13 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import {
   QueryClient,
-  QueryClientProvider,
   type QueryClientConfig,
+  QueryClientProvider,
 } from "@tanstack/solid-query";
 import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { ErrorBoundary, Suspense, type ParentProps } from "solid-js";
+import { ErrorBoundary, type ParentProps, Suspense } from "solid-js";
 import { isServer } from "solid-js/web";
 
 dayjs.extend(utc);

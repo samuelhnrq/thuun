@@ -4,6 +4,7 @@ import { getCurrentDate } from "~/lib/utils";
 import { ConflictError, NotFoundError } from "../../lib/errors";
 import { aggregateEntityProps } from "../comparator";
 import { logger } from "../logger";
+import { CachedResource } from "../synced-cache";
 import { db } from "./client";
 import {
   entity,
@@ -12,7 +13,6 @@ import {
   entityPropValue as propValue,
   userGuess,
 } from "./schema";
-import { CachedResource } from "../synced-cache";
 
 class CachedGame extends CachedResource<GameWithAnswer> {
   async cacheValueMiss(gameKey: string): Promise<GameWithAnswer | null> {

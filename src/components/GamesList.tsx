@@ -1,9 +1,9 @@
-import { For, Suspense } from "solid-js";
-import type { Game } from "~/lib/models";
-import { Loading } from "./Loading";
-import { useListGames } from "~/lib/use-list-games";
 import { A } from "@solidjs/router";
 import clsx from "clsx";
+import { For, Suspense } from "solid-js";
+import type { Game } from "~/lib/models";
+import { useListGames } from "~/lib/use-list-games";
+import { Loading } from "./Loading";
 
 function LinkToGame(game: Game) {
   return (

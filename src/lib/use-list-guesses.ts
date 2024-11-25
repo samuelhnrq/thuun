@@ -1,7 +1,7 @@
 import { createQuery } from "@tanstack/solid-query";
+import { from } from "solid-js";
 import { listGuesses } from "~/server/api/procedures/list-guesses";
 import { gameKey$ } from "./state";
-import { from } from "solid-js";
 
 export function useListGuesses() {
   const gameKey = from(gameKey$());

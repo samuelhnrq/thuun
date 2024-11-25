@@ -10,10 +10,10 @@ import {
 } from "rxjs";
 import { Show, Suspense, createSignal, from } from "solid-js";
 import type { EntitySearchResult } from "~/lib/models";
+import { gameKey$ } from "~/lib/state";
 import { searchArtist } from "~/server/api/procedures/search-artist";
 import { Combobox } from "./Combobox";
 import { Loading } from "./Loading";
-import { gameKey$ } from "~/lib/state";
 
 const textInput = new BehaviorSubject<string>("");
 

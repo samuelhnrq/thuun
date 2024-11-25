@@ -1,15 +1,15 @@
 import { useNavigate } from "@solidjs/router";
 import dayjs from "dayjs";
+import { FaSolidCalendar } from "solid-icons/fa";
 import { Show } from "solid-js";
 import { createSignal } from "solid-js";
 import { v1 as uuid } from "uuid";
+import Button from "~/components/Button";
 import { EntitySelector } from "~/components/EntitySelector";
+import { GamesList } from "~/components/GamesList";
 import { Scaffolding } from "~/components/Scaffolding";
 import type { EntitySearchResult } from "~/lib/models";
-import { FaSolidCalendar } from "solid-icons/fa";
 import { createGame } from "~/server/api/procedures/create-game";
-import Button from "~/components/Button";
-import { GamesList } from "~/components/GamesList";
 
 export default function Home() {
   const [shown, setShown] = createSignal(false);

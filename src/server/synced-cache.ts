@@ -1,5 +1,5 @@
-import { LRUCache } from "lru-cache";
 import Locker from "async-lock";
+import { LRUCache } from "lru-cache";
 import { logger } from "./logger";
 
 export abstract class CachedResource<T extends {}> {
