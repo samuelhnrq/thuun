@@ -14,7 +14,7 @@ function SafeEntityGuesser() {
   );
   const answerFound = () =>
     (!!guessList.data && guessList.data?.length >= 10) || !!correctArtist();
-  const getGameKey = from(gameKey$);
+  const getGameKey = from(gameKey$());
   const mutation = createMutation(() => ({
     mutationKey: ["guesses", "new"],
     mutationFn: async (value: EntitySearchResult) => {

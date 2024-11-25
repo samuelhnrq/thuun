@@ -19,7 +19,7 @@ dayjs.extend(utc);
 function createQueryClient() {
   const config: QueryClientConfig = {
     defaultOptions: {
-      queries: { experimental_prefetchInRender: true },
+      queries: { experimental_prefetchInRender: true, throwOnError: true },
     },
   };
   if (isServer) {

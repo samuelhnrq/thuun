@@ -9,6 +9,7 @@ import type { EntitySearchResult } from "~/lib/models";
 import { FaSolidCalendar } from "solid-icons/fa";
 import { createGame } from "~/server/api/procedures/create-game";
 import Button from "~/components/Button";
+import { GamesList } from "~/components/GamesList";
 
 export default function Home() {
   const [shown, setShown] = createSignal(false);
@@ -33,6 +34,7 @@ export default function Home() {
         <FaSolidCalendar class="inline-block mr-2x" />
         Go to The Daily Game
       </Button>
+      <GamesList />
       <Show
         when={shown()}
         fallback={<Button onClick={() => setShown(true)}>New game</Button>}

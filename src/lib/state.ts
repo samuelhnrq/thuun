@@ -16,24 +16,29 @@ function currentUrl(): URL {
   return new URL(getRequestEvent()?.request?.url || "");
 }
 
-function routeChange() {
+function routeChange(): Observable<Event | null> {
   if (isServer) {
     return of(null);
   }
-  return fromEvent(window.navigation, "navigate");
+  return concat(of(null), fromEvent(window.navigation, "navigate"));
 }
 
-export const gameKey$: Observable<string | null> = concat(
-  of(null),
-  routeChange(),
-).pipe(
-  map(() => {
-    const path = currentUrl().pathname;
-    if (path.startsWith("/game/")) {
-      return path.split("/")[2];
-    }
-    return null;
-  }),
-  distinctUntilChanged(),
-  shareReplay(1),
-);
+let gameKeyed$: Observable<string | null> | null = null;
+
+export const gameKey$: () => Observable<string | null> = () => {
+  if (!isServer && gameKeyed$) {
+    return gameKeyed$;
+  }
+  gameKeyed$ = routeChange().pipe(
+    map(() => {
+      const path = currentUrl().pathname;
+      if (path.startsWith("/game/")) {
+        return path.split("/")[2];
+      }
+      return null;
+    }),
+    distinctUntilChanged(),
+    shareReplay(1),
+  );
+  return gameKeyed$;
+};

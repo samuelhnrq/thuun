@@ -19,7 +19,7 @@ const textInput = new BehaviorSubject<string>("");
 
 const artistList$ = textInput.pipe(
   debounceTime(500),
-  combineLatestWith(gameKey$),
+  combineLatestWith(gameKey$()),
   switchMap(([searched, gameKey]) => searchArtist(searched, gameKey)),
   shareReplay(1),
 );

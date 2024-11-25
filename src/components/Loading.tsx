@@ -1,4 +1,4 @@
-function Loading() {
+function Loading(props: { height?: string }) {
   return (
     <div class="relative width-full h-0">
       <svg
@@ -7,7 +7,7 @@ function Loading() {
         preserveAspectRatio="xMidYMid slice"
         style={{
           background: "0 0",
-          height: "15px",
+          height: props.height || "15px",
           margin: "0 auto",
           overflow: "hidden",
           display: "block",

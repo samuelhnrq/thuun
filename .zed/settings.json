@@ -1,0 +1,3 @@
+{
+  "language_servers": ["!eslint", "typescript-language-server", "tailwindcss-language-server", "biome"]
+}

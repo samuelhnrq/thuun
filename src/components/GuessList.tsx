@@ -1,8 +1,9 @@
-import { For, Show } from "solid-js";
+import { For, Show, Suspense } from "solid-js";
 import { cn } from "~/lib/cn";
 import type { GuessAnswer, PropComparison } from "~/lib/models";
 import { useListGuesses } from "~/lib/use-list-guesses";
 import { CountryFlag } from "./CountryFlag";
+import { Loading } from "./Loading";
 
 function colorClassCorrect(correct: boolean) {
   return {
@@ -68,7 +69,9 @@ function GuessList() {
   const res = useListGuesses();
   return (
     <div class="max-h-[70vh] overflow-y-auto">
-      <For each={res.data}>{GuessedArtist}</For>
+      <Suspense fallback={<Loading height="40px" />}>
+        <For each={res.data}>{GuessedArtist}</For>
+      </Suspense>
     </div>
   );
 }
