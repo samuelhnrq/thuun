@@ -5,7 +5,7 @@ ARG BUN_VERSION="1.2.0"
 ARG HOSTNAME="thuun.k3s.slva.fr"
 
 # Throw-away build stage to reduce size of final image
-FROM oven/bun:${BUN_VERSION} AS build
+FROM oven/bun:${BUN_VERSION}-alpine AS build
 
 # Install node modules
 COPY bun.lockb package.json ./
