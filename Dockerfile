@@ -2,7 +2,6 @@
 
 # Adjust BUN_VERSION as desired
 ARG BUN_VERSION="1.2.0"
-ARG HOSTNAME="thuun.k3s.slva.fr"
 
 # Throw-away build stage to reduce size of final image
 FROM oven/bun:${BUN_VERSION}-alpine AS build
@@ -37,8 +36,6 @@ RUN bun install
 
 # Set production environment
 ENV NODE_ENV="production"
-ENV HOSTNAME=$HOSTNAME
-ENV AUTH_TRUST_HOST="true"
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
