@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Adjust BUN_VERSION as desired
-ARG BUN_VERSION="1.1.34"
+ARG BUN_VERSION="1.2.0"
 ARG HOSTNAME="thuun.k3s.slva.fr"
 
 # Throw-away build stage to reduce size of final image
