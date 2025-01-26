@@ -26,11 +26,14 @@ RUN bun run biome ci && \
 # Final stage for app image
 FROM oven/bun:${BUN_VERSION}-alpine AS runtime
 
+RUN chown bun /home/bun/app
 USER bun
 WORKDIR /home/bun/app
 
 # Copy built application
 COPY --from=build --chown=bun:bun /home/bun/app/.output ./
+COPY --chown=bun:bun bun.lockb package.json ./
+RUN bun install
 
 # Set production environment
 ENV NODE_ENV="production"
