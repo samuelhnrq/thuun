@@ -8,7 +8,6 @@ import {
   type QueryClientConfig,
   QueryClientProvider,
 } from "@tanstack/solid-query";
-import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { ErrorBoundary, type ParentProps, Suspense } from "solid-js";
@@ -19,7 +18,7 @@ dayjs.extend(utc);
 function createQueryClient() {
   const config: QueryClientConfig = {
     defaultOptions: {
-      queries: { experimental_prefetchInRender: true, throwOnError: true },
+      queries: { throwOnError: true, staleTime: 1000 },
     },
   };
   if (isServer) {
@@ -38,12 +37,14 @@ function Root(props: ParentProps) {
   return (
     <MetaProvider>
       <Title>SolidStart - Basic</Title>
-      <QueryClientProvider client={createQueryClient()}>
-        <ErrorBoundary fallback={GlobalErrorHandler}>
-          <Suspense fallback="Loading route">{props.children}</Suspense>
-        </ErrorBoundary>
-        <SolidQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+      <Suspense fallback="Loading route">
+        <QueryClientProvider client={createQueryClient()}>
+          <ErrorBoundary fallback={GlobalErrorHandler}>
+            {props.children}
+          </ErrorBoundary>
+          {/* <SolidQueryDevtools initialIsOpen={false} /> */}
+        </QueryClientProvider>
+      </Suspense>
     </MetaProvider>
   );
 }

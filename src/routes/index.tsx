@@ -1,6 +1,5 @@
 import { useNavigate } from "@solidjs/router";
 import dayjs from "dayjs";
-import { FaSolidCalendar } from "solid-icons/fa";
 import { Show } from "solid-js";
 import { createSignal } from "solid-js";
 import { v1 as uuid } from "uuid";
@@ -10,6 +9,7 @@ import { GamesList } from "~/components/GamesList";
 import { Scaffolding } from "~/components/Scaffolding";
 import type { EntitySearchResult } from "~/lib/models";
 import { useUser } from "~/lib/session.tsx";
+import CalendarIcon from "~icons/material-symbols/calendar-month-rounded";
 import { createGame } from "~/server/api/procedures/create-game";
 
 export default function Home() {
@@ -34,7 +34,7 @@ export default function Home() {
             navigte(`/game/${dayjs().utc().startOf("day").toISOString()}`)
           }
         >
-          <FaSolidCalendar class="inline-block mr-2x" />
+          <CalendarIcon class="inline-block mr-2x" />
           Go to The Daily Game
         </Button>
         <GamesList />

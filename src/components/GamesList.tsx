@@ -11,7 +11,7 @@ function LinkToGame(game: Game) {
       href={`/game/${game.gameKey}`}
       class={clsx(
         "px-4 py-2 hover:bg-gray-700 dark:hover:bg-gray-900 ",
-        "block w-full",
+        "block w-full"
       )}
     >
       {game.gameKey} - Created at {game.createdAt.toLocaleString()}
@@ -28,10 +28,12 @@ function GamesList() {
           id="container"
           class={clsx(
             " bg-gray-400 dark:bg-gray-800 border-solid",
-            "border-[1px] rounded-md ring-slate-100 max-h-[20vh] overflow-y-auto",
+            "border-1 rounded-md ring-slate-100 max-h-[20vh] overflow-y-auto"
           )}
         >
-          <For each={res.data}>{LinkToGame}</For>
+          <For each={res.data} fallback={<div class="m-2">No games yet</div>}>
+            {LinkToGame}
+          </For>
         </div>
       </Suspense>
     </div>

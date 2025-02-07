@@ -11,7 +11,6 @@ import { UnauthorizedError } from "../lib/errors";
 const config: SolidAuthConfig = {
   basePath: "/api/auth",
   secret: process.env.AUTH_SECRET,
-  trustHost: !!process.env.AUTH_TRUST_HOST,
   jwt: { maxAge: 24 * 60 * 60 },
   providers: [
     GoogleProvider({

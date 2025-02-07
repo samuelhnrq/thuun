@@ -8,8 +8,8 @@ function Button({ children, ...rest }: ParentProps<Props>) {
   return (
     <BaseButton
       class={cn(
-        "bg-primary text-slate-200 px-4 py-2 rounded-md",
-        "hover:brightness-110 focus:ring-1",
+        "bg-purple-300 text-slate-200 px-4 py-2 rounded-md",
+        "hover:brightness-110 focus:ring-1 cursor-pointer dark:bg-purple-700"
       )}
       {...rest}
     >

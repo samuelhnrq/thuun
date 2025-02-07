@@ -15,17 +15,22 @@
     "allowJs": true,
     "strict": true,
     "noEmit": true,
-    "types": ["vinxi/types/client", "bun-types", "@types/dom-navigation"],
+    "types": [
+      "vinxi/types/client",
+      "bun-types",
+      "@types/dom-navigation",
+      "unplugin-icons/types/solid"
+    ],
     "isolatedModules": true,
     "paths": {
       "~/*": ["./src/*"]
     },
-     // Bundler mode
+    // Bundler mode
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
 
     // Best practices
     "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

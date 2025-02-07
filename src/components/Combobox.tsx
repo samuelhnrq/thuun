@@ -4,7 +4,8 @@ import {
   type ComboboxRootProps,
 } from "@kobalte/core/combobox";
 import clsx from "clsx";
-import { FaSolidArrowDown, FaSolidCheck } from "solid-icons/fa";
+import CheckIcon from "~icons/material-symbols/check-rounded";
+import ArrowDownIcon from "~icons/material-symbols/keyboard-double-arrow-down-rounded";
 import type { JSX } from "solid-js";
 
 type Props<T> = ComboboxRootProps<T> & {
@@ -18,20 +19,20 @@ function AppCombobox<T>(outProps: Props<T>) {
       itemComponent={(props) => (
         <Combobox.Item
           item={props.item}
-          class="text-text px-2 py-1 w-full ui-highlighted:bg-primary"
+          class="text-gray-200 px-2 py-1 w-full data-highlighted:bg-slate-400"
         >
           <Combobox.ItemLabel class="flex items-center justify-between">
             {props.item.textValue}
             <Combobox.ItemIndicator>
-              <FaSolidCheck class="inline-block" />
+              <CheckIcon class="inline-block" />
             </Combobox.ItemIndicator>
           </Combobox.ItemLabel>
         </Combobox.Item>
       )}
       class={clsx(
-        "focus:border-b-primary bg-bgDarker border-b-2 border-b-gray-500",
+        "focus:border-b-primary bg-slate-300 dark:bg-slate-600 border-b-2 border-b-gray-500",
         "rounded-t-md py-1",
-        { "brightness-75": outProps.disabled },
+        { "brightness-75": outProps.disabled }
       )}
       disabled={outProps.disabled}
       onInputChange={outProps.onInputChange}
@@ -41,18 +42,18 @@ function AppCombobox<T>(outProps: Props<T>) {
       <Combobox.Control class="px-3 py-1 w-full flex items-center flex-wrap">
         <Combobox.Label
           class={clsx(
-            "flex-grow basis-[100%] text-sm font-medium text-text/75",
+            "flex-grow basis-[100%] text-sm font-medium text-text/75"
           )}
         >
           {outProps.label}
         </Combobox.Label>
         <Combobox.Input
-          class="focus:outline-none flex-1 bg-bgDarker placeholder:text-text/25"
+          class="focus:outline-none flex-1 bg-slate-300 dark:bg-slate-600 placeholder:text-text/25"
           {...outProps.inputProps}
         />
         <Combobox.Trigger>
           <Combobox.Icon>
-            <FaSolidArrowDown />
+            <ArrowDownIcon />
           </Combobox.Icon>
         </Combobox.Trigger>
       </Combobox.Control>
@@ -62,7 +63,7 @@ function AppCombobox<T>(outProps: Props<T>) {
         <Combobox.Content
           class={clsx(
             "animate-contentHide ui-expanded:animate-contentShow rounded-md",
-            "bg-bgDarker overflow-hidden",
+            "bg-slate-300 dark:bg-slate-600 overflow-hidden"
           )}
         >
           {/* <Combobox.Arrow /> */}

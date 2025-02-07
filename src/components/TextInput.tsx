@@ -23,9 +23,9 @@ function TextInput(props: Props) {
       </Label>
       <Input
         class={cn(
-          "bg-bg text-text",
+          "bg-slate-100 text-text",
           "focus:outline-none focus:border-b-primary",
-          "border-b-2 border-b-gray-500",
+          "border-b-2 border-b-gray-500"
         )}
         type="text"
         placeholder=""
